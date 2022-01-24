@@ -14,7 +14,6 @@ import homeassistant.components.mqtt as mqtt
 from .const import (
     DOMAIN,
     PLATFORMS,
-    STARTUP_MESSAGE,
     CONF_MQTT_BASE_TOPIC
 )
 
