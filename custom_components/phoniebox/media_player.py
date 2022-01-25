@@ -14,7 +14,7 @@ from .const import (
     VERSION,
     ATTRIBUTION,
     CONF_PHONIEBOX_NAME,
-    SUPPORT_MQTTMEDIAPLAYER
+    SUPPORT_MQTTMEDIAPLAYER, PHONIEBOX_STATE_TO_HA
 )
 from .sensor import string_to_bool
 
@@ -80,10 +80,7 @@ class IntegrationBlueprintMediaPlayer(MediaPlayerEntity, ABC):
         if changed_attribute_name == "volume":
             self._attr_volume_level = float(new_value) / 100.0
         elif changed_attribute_name == "state":
-            if new_value == "stop":
-                self._attr_state = STATE_IDLE
-            else:
-                self._attr_state = new_value
+            self._attr_state = PHONIEBOX_STATE_TO_HA[new_value]
         elif changed_attribute_name == "mute":
             self._attr_is_volume_muted = string_to_bool(new_value)
         elif changed_attribute_name == "random":
