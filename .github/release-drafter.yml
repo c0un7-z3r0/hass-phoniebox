@@ -4,24 +4,56 @@ change-template: '- #$NUMBER $TITLE @$AUTHOR'
 sort-direction: ascending
 categories:
   - title: ':boom: Breaking changes'
-    label: 'Breaking Change'
+    label: 'pr: breaking'
 
-  - title: ':sparkles: New features'
-    label: 'pr: new-feature'
-
-  - title: ':zap: Enhancements'
-    label: 'pr: enhancement'
+  - title: ':sparkles: Features'
+    label: 'pr: feat'
 
   - title: ':recycle: Refactor'
     label: 'pr: refactor'
 
   - title: ':bug: Bug Fixes'
-    label: 'pr: bugfix'
+    label: 'pr: fix'
 
-  - title: ':arrow_up: Dependency Updates'
-    labels:
-      - 'pr: dependency-update'
-      - 'dependencies'
+  - title: ':zap: Performance Improvements'
+    labels: 'pr: perf'
+
+
+autolabeler:
+  - label: 'pr: breaking'
+    body:
+      - '/BREAKING CHANGE/'
+  - label: 'pr: test'
+    branch:
+      - 'test\/.+/'
+  - label: 'pr: style'
+    branch:
+      - 'style\/.+/'
+  - label: 'pr: refactor'
+    branch:
+      - '/refactor\/.+/'
+  - label: 'pr: perf'
+    branch:
+      - '/perf\/.+/'
+  - label: 'pr: fix'
+    branch:
+      - '/fix\/.+/'
+  - label: 'pr: ci'
+    branch:
+      - '/ci\/.+/'
+  - label: 'pr: build'
+    branch:
+      - '/build\/.+/'
+  - label: 'pr: docs'
+    files:
+      - '*.md'
+    branch:
+      - '/docs{0,1}\/.+/'
+  - label: 'pr: feat'
+    branch:
+      - '/feature\/.+/'
+
+
 
 include-labels:
   - 'Breaking Change'
