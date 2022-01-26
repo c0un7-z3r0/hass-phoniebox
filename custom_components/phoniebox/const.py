@@ -1,4 +1,4 @@
-"""Constants for integration_blueprint."""
+"""Constants for phoniebox."""
 from homeassistant.components.media_player.const import (
     REPEAT_MODE_ALL,
     REPEAT_MODE_OFF,

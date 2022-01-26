@@ -1,4 +1,4 @@
-"""Sensor platform for integration_blueprint."""
+"""Sensor platform for phoniebox."""
 import logging
 
 from homeassistant.components.sensor import SensorDeviceClass, SensorEntity

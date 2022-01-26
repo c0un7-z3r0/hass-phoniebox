@@ -1,4 +1,4 @@
-"""Switch platform for integration_blueprint."""
+"""Switch platform for phoniebox."""
 from __future__ import annotations
 
 import logging
@@ -80,7 +80,7 @@ async def async_setup_entry(hass, entry, async_add_devices):
 
 
 class PhonieboxBinarySwitch(SwitchEntity, ABC):
-    """integration_blueprint switch class."""
+    """phoniebox switch class."""
 
     _attr_should_poll = False
 

@@ -1,4 +1,4 @@
-"""Binary sensor platform for integration_blueprint."""
+"""Binary sensor platform for phoniebox."""
 from __future__ import annotations
 
 import logging
@@ -8,7 +8,6 @@ from homeassistant.components.binary_sensor import (
     BinarySensorEntity,
 )
 from homeassistant.config_entries import ConfigEntries
-from homeassistant.util import slugify
 
 from .const import BOOLEAN_SENSORS, CONF_PHONIEBOX_NAME, DOMAIN, NAME, VERSION
 from .sensor import _slug, string_to_bool
