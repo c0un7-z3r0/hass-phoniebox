@@ -26,7 +26,7 @@ from homeassistant.const import STATE_IDLE, STATE_PAUSED, STATE_PLAYING
 NAME = "Phoniebox"
 DOMAIN = "phoniebox"
 DOMAIN_DATA = f"{DOMAIN}_data"
-VERSION = "0.0.1"
+VERSION = "0.1.1"
 ATTRIBUTION = ""
 ISSUE_URL = "https://github.com/c0un7-z3r0/hass-phoniebox/issues"
 
