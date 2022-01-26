@@ -39,6 +39,7 @@ async def async_setup(hass: HomeAssistant, config: Config):
     """Set up this integration using YAML is not supported."""
     return True
 
+
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     """Set up this integration using UI."""
     if hass.data.get(DOMAIN) is None:

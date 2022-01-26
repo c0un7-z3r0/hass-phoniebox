@@ -3,13 +3,18 @@ import logging
 from abc import ABC, ABCMeta
 
 from homeassistant.components.media_player import MediaPlayerEntity
-from homeassistant.components.media_player.const import MEDIA_TYPE_MUSIC
+from homeassistant.components.media_player.const import (
+    MEDIA_TYPE_MUSIC,
+    REPEAT_MODE_OFF,
+    REPEAT_MODE_ONE,
+)
 from homeassistant.const import STATE_IDLE
 
 from .const import (
     ATTRIBUTION,
     CONF_PHONIEBOX_NAME,
     DOMAIN,
+    HA_REPEAT_TO_PHONIEBOX,
     NAME,
     PHONIEBOX_STATE_TO_HA,
     SUPPORT_MQTTMEDIAPLAYER,
@@ -43,7 +48,7 @@ class IntegrationBlueprintMediaPlayer(MediaPlayerEntity, ABC):
         self._attr_volume_level = 0.0
         self._attr_is_volume_muted = False
         self._attr_shuffle = False
-        self._attr_repeat = False
+        self._attr_repeat = REPEAT_MODE_OFF
         self._max_volume = 100
         self._attr_media_artist = None
         self._attr_media_album_artist = None
@@ -106,6 +111,11 @@ class IntegrationBlueprintMediaPlayer(MediaPlayerEntity, ABC):
             self._attr_media_album_artist = new_value
         elif changed_attribute_name == "volstep":
             self._vol_steps = new_value
+        elif changed_attribute_name == "repeat":
+            if new_value == "true":
+                self._attr_repeat = REPEAT_MODE_ONE  # is bad but phoniebox will only say if repeat is on or off
+            else:
+                self._attr_repeat = REPEAT_MODE_OFF
 
         self.schedule_update_ha_state(True)
 
@@ -159,7 +169,9 @@ class IntegrationBlueprintMediaPlayer(MediaPlayerEntity, ABC):
     async def async_set_repeat(self, repeat):
         """Set repeat mode."""
         _LOGGER.debug("repeat: %s", repeat)
-        await self.mqtt_client.async_publish("cmd/playerrepeat", repeat)
+        await self.mqtt_client.async_publish(
+            "cmd/playerrepeat", HA_REPEAT_TO_PHONIEBOX[repeat]
+        )
 
     async def async_turn_off(self):
         """Turn the media player off."""

@@ -8,7 +8,15 @@ from typing import Any
 from homeassistant.components.switch import SwitchEntity
 from homeassistant.helpers.entity import EntityCategory
 
-from .const import BINARY_SWITCHES, CONF_PHONIEBOX_NAME, DOMAIN, NAME, VERSION
+from .const import (
+    BINARY_SWITCHES,
+    CONF_PHONIEBOX_NAME,
+    DOMAIN,
+    NAME,
+    PHONIEBOX_START,
+    PHONIEBOX_STOP,
+    VERSION,
+)
 from .sensor import _slug, string_to_bool
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
@@ -26,7 +34,13 @@ def discover_sensors(topic, entry, coordinator) -> PhonieboxBinarySwitch | None:
 
     if domain in ["gpio", "rfid"]:
         return PhonieboxBinarySwitch(
-            entry, coordinator, domain, domain, "start", "stop", EntityCategory.CONFIG
+            entry,
+            coordinator,
+            domain,
+            domain,
+            PHONIEBOX_START,
+            PHONIEBOX_STOP,
+            EntityCategory.CONFIG,
         )
 
     if domain == "random":
