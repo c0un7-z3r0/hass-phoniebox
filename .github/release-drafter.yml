@@ -56,27 +56,28 @@ autolabeler:
 
 
 include-labels:
-  - 'Breaking Change'
-  - 'pr: enhancement'
-  - 'pr: dependency-update'
-  - 'pr: new-feature'
-  - 'pr: bugfix'
+  - 'pr: breaking'
+  - 'pr: fix'
+  - 'pr: feat'
+  - 'pr: perf'
   - 'pr: refactor'
 
 version-resolver:
+  major:
+    labels:
+      - 'pr: breaking'
   minor:
     labels:
-      - 'Breaking Change'
-      - 'pr: enhancement'
-      - 'pr: dependency-update'
-      - 'pr: new-feature'
+      - 'pr: feat'
+      - 'pr: perf'
+      - 'pr: refactor'
   patch:
     labels:
-      - 'pr: bugfix'
+      - 'pr: fix'
   default: minor
 
 template: |
-  [![Downloads for this release](https://img.shields.io/github/downloads/hacs/integration/$RESOLVED_VERSION/total.svg)](https://github.com/c0un7-z3r0/hass-phoniebox/releases/$RESOLVED_VERSION)
+  [![Downloads for this release](https://img.shields.io/github/downloads/c0un7-z3r0/hass-phoniebox/v$RESOLVED_VERSION/total.svg)](https://github.com/c0un7-z3r0/hass-phoniebox/releases/v$RESOLVED_VERSION)
   $CHANGES
   
   ## Links
