@@ -54,8 +54,15 @@ If you want to install the custom component manually, add the folder `phoniebox/
 There are currently two settings that need configuration for the phoniebox. The name of the phoniebox
 and the base MQTT Topic. This helps if you have multiple phonieboxes that you want to add to Home Assistant.
 
-![ha phoniebox config(https://github.com/c0un7-z3r0/hass-phoniebox/blob/main/assets/configuration_options.png)
-![ha phoniebox integration(https://github.com/c0un7-z3r0/hass-phoniebox/blob/main/assets/device.png)
+![ha phoniebox config](https://github.com/c0un7-z3r0/hass-phoniebox/blob/main/assets/configuration_options.png)
+
+![ha phoniebox integration](https://github.com/c0un7-z3r0/hass-phoniebox/blob/main/assets/device.png)
+
+## Issues
+
+If When you experience issues/bugs with this the best way to report them is to open an issue in this repo.
+
+[Report issues here](https://github.com/c0un7-z3r0/hass-phoniebox/issues)
 
 <!---->
 
