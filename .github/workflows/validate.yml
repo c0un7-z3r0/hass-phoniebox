@@ -31,3 +31,5 @@ jobs:
         name: CI
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - uses: home-assistant/actions/hassfest@master
+     
