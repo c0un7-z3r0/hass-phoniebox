@@ -1,11 +1,12 @@
 # HA Phoniebox
 
 [![GitHub Release][releases-shield]][releases]
-[![GitHub Activity][commits-shield]][commits]
+![GitHub commit activity][commits-shield]
 [![License][license-shield]](LICENSE)
 [![hacs][hacsbadge]][hacs]
 ![Project Maintenance][maintenance-shield]
 [![Validate](https://github.com/c0un7-z3r0/hass-phoniebox/actions/workflows/validate.yml/badge.svg)](https://github.com/c0un7-z3r0/hass-phoniebox/actions/workflows/validate.yml)
+
 
 _Component to integrate your [phoniebox][phoniebox-repo] with [home-assistant][ha-website]._
 
@@ -64,7 +65,7 @@ and the base MQTT Topic. This helps if you have multiple phonieboxes that you wa
 
 [hass-phoniebox]: https://github.com/c0un7-z3r0/hass-phoniebox
 
-[commits-shield]: https://img.shields.io/github/commit-activity/y/custom-components/blueprint.svg?style=for-the-badge
+[commits-shield]: https://img.shields.io/github/commit-activity/w/c0un7-z3r0/hass-phoniebox?style=for-the-badge
 
 [commits]: https://github.com/c0un7-z3r0/hass-phoniebox/commits/main
 
@@ -72,23 +73,15 @@ and the base MQTT Topic. This helps if you have multiple phonieboxes that you wa
 
 [hacsbadge]: https://img.shields.io/badge/HACS-Custom-orange.svg?style=for-the-badge
 
-[discord]: https://discord.gg/Qa5fW2R
-
-[discord-shield]: https://img.shields.io/discord/330944238910963714.svg?style=for-the-badge
-
-[exampleimg]: example.png
-
-[forum-shield]: https://img.shields.io/badge/community-forum-brightgreen.svg?style=for-the-badge
-
 [ha-forum]: https://community.home-assistant.io/
 
 [ha-website]: https://www.home-assistant.io/
 
-[license-shield]: https://img.shields.io/github/license/custom-components/blueprint.svg?style=for-the-badge
+[license-shield]: https://img.shields.io/github/license/c0un7-z3r0/hass-phoniebox?style=for-the-badge
 
 [maintenance-shield]: https://img.shields.io/badge/maintainer-%40c0un7--z3r0-blue.svg?style=for-the-badge
 
-[releases-shield]: https://img.shields.io/github/release/custom-components/blueprint.svg?style=for-the-badge
+[releases-shield]: https://img.shields.io/github/release/c0un7-z3r0/hass-phoniebox?style=for-the-badge
 
 [releases]: https://github.com/c0un7-z3r0/hass-phoniebox/releases
 
