@@ -4,10 +4,6 @@
 [![hacs][hacsbadge]][hacs]
 ![Project Maintenance][maintenance-shield]
 
-{% if pending_update %}
-## Please check out the latest release [{% version_available %}](https://github.com/c0un7-z3r0/hass-phoniebox/releases/{% version_available %})
-{% endif %}
-
 _Component to integrate your [phoniebox][phoniebox-repo] with [home-assistant][ha-website]._
 
 ![ha phoniebox mediaplayer](https://github.com/c0un7-z3r0/hass-phoniebox/blob/main/assets/media_player.png)
@@ -20,7 +16,6 @@ _Component to integrate your [phoniebox][phoniebox-repo] with [home-assistant][h
 - enable / disable rfid or gpio from home assistant as configuration
 - switch to toggle mute or random 
 
-{% if not installed %}
 ## Requirements
 - You will need to setup MQTT Broker in Home Asssitant: [MQTT integration][ha_mqtt]  
 - You will need to setup MQTT on Phoniebox: [Phoniebox MQTT Installation][phoniebox_mqtt_setup]
@@ -40,7 +35,6 @@ _Component to integrate your [phoniebox][phoniebox-repo] with [home-assistant][h
 
 If you want to install the custom component manually, add the folder `phoniebox/` to `YOUR_CONFIG_DIR/custom_components/`.
 
-{% endif %}
 
 ## Configuration is done in the UI
 
