@@ -5,6 +5,7 @@
 [![License][license-shield]](LICENSE)
 [![hacs][hacsbadge]][hacs]
 ![Project Maintenance][maintenance-shield]
+[![Validate](https://github.com/c0un7-z3r0/hass-phoniebox/actions/workflows/validate.yml/badge.svg)](https://github.com/c0un7-z3r0/hass-phoniebox/actions/workflows/validate.yml)
 
 _Component to integrate your [phoniebox][phoniebox-repo] with [home-assistant][ha-website]._
 
