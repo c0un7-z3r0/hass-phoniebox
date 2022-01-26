@@ -1,18 +1,24 @@
 """Constants for integration_blueprint."""
 from homeassistant.components.media_player.const import (
+    SUPPORT_CLEAR_PLAYLIST,
+    SUPPORT_GROUPING,
     SUPPORT_NEXT_TRACK,
     SUPPORT_PAUSE,
     SUPPORT_PLAY,
+    SUPPORT_PLAY_MEDIA,
     SUPPORT_PREVIOUS_TRACK,
+    SUPPORT_REPEAT_SET,
+    SUPPORT_SEEK,
+    SUPPORT_SELECT_SOURCE,
+    SUPPORT_SHUFFLE_SET,
+    SUPPORT_STOP,
+    SUPPORT_VOLUME_MUTE,
     SUPPORT_VOLUME_SET,
     SUPPORT_VOLUME_STEP,
-    SUPPORT_VOLUME_MUTE,
-    SUPPORT_SHUFFLE_SET, SUPPORT_CLEAR_PLAYLIST, SUPPORT_GROUPING, SUPPORT_PLAY_MEDIA, SUPPORT_REPEAT_SET, SUPPORT_SEEK,
-    SUPPORT_SELECT_SOURCE, SUPPORT_STOP,
 )
 
 # Base component constants
-from homeassistant.const import STATE_PLAYING, STATE_IDLE, STATE_PAUSED
+from homeassistant.const import STATE_IDLE, STATE_PAUSED, STATE_PLAYING
 
 NAME = "Phoniebox"
 DOMAIN = "phoniebox"
@@ -32,20 +38,20 @@ BINARY_SENSOR = "binary_sensor"
 SENSOR = "sensor"
 SWITCH = "switch"
 MEDIA_PLAYER = "media_player"
-PLATFORMS = [SENSOR, BINARY_SENSOR,SWITCH, MEDIA_PLAYER]
+PLATFORMS = [SENSOR, BINARY_SENSOR, SWITCH, MEDIA_PLAYER]
 
 # Player
 SUPPORT_MQTTMEDIAPLAYER = (
-        SUPPORT_PAUSE
-        | SUPPORT_VOLUME_STEP
-        | SUPPORT_PREVIOUS_TRACK
-        | SUPPORT_VOLUME_SET
-        | SUPPORT_NEXT_TRACK
-        | SUPPORT_PLAY
-        | SUPPORT_VOLUME_MUTE
-        | SUPPORT_SHUFFLE_SET
-        | SUPPORT_REPEAT_SET
-        | SUPPORT_STOP
+    SUPPORT_PAUSE
+    | SUPPORT_VOLUME_STEP
+    | SUPPORT_PREVIOUS_TRACK
+    | SUPPORT_VOLUME_SET
+    | SUPPORT_NEXT_TRACK
+    | SUPPORT_PLAY
+    | SUPPORT_VOLUME_MUTE
+    | SUPPORT_SHUFFLE_SET
+    | SUPPORT_REPEAT_SET
+    | SUPPORT_STOP
 )
 
 
@@ -56,7 +62,7 @@ PHONIEBOX_STATE_PAUSE = "pause"
 PHONIEBOX_STATE_TO_HA = {
     PHONIEBOX_STATE_PLAY: STATE_PLAYING,
     PHONIEBOX_STATE_STOP: STATE_IDLE,
-    PHONIEBOX_STATE_PAUSE: STATE_PAUSED
+    PHONIEBOX_STATE_PAUSE: STATE_PAUSED,
 }
 
 # Configuration and options
@@ -70,10 +76,38 @@ CONF_MQTT_BASE_TOPIC = "mqtt_base_topic"
 # Defaults
 DEFAULT_NAME = DOMAIN
 
-BINARY_SWITCHES = ["gpio", "rfid", "random", "mute", ]
-BOOLEAN_SENSORS = ["gpio", "rfid", "repeat", "random", "mute", ]
-STRING_SENSORS = ["throttling", "version", "last_card", "album", "artist", "albumartist", "edition"]
-NUMBER_SENSORS = ["remaining_stopafter", "remaining_shutdownafter", "remaining_idle", "volstep", "maxvolume",
-                  "idletime"]
-GIGABYTE_SENSORS = ["disk_avail", "disk_total", ]
+BINARY_SWITCHES = [
+    "gpio",
+    "rfid",
+    "random",
+    "mute",
+]
+BOOLEAN_SENSORS = [
+    "gpio",
+    "rfid",
+    "repeat",
+    "random",
+    "mute",
+]
+STRING_SENSORS = [
+    "throttling",
+    "version",
+    "last_card",
+    "album",
+    "artist",
+    "albumartist",
+    "edition",
+]
+NUMBER_SENSORS = [
+    "remaining_stopafter",
+    "remaining_shutdownafter",
+    "remaining_idle",
+    "volstep",
+    "maxvolume",
+    "idletime",
+]
+GIGABYTE_SENSORS = [
+    "disk_avail",
+    "disk_total",
+]
 IGNORE_SENSORS = ["title", "track", "trackdate", "elapsed", "duration", "volume"]

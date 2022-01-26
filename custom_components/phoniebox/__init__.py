@@ -5,17 +5,14 @@ For more details about this integration, please refer to
 https://github.com/custom-components/integration_blueprint
 """
 import asyncio
-from datetime import timedelta
 import logging
+from datetime import timedelta
 
+import homeassistant.components.mqtt as mqtt
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import Config, HomeAssistant
-import homeassistant.components.mqtt as mqtt
-from .const import (
-    DOMAIN,
-    PLATFORMS,
-    CONF_MQTT_BASE_TOPIC
-)
+
+from .const import CONF_MQTT_BASE_TOPIC, DOMAIN, PLATFORMS
 
 SCAN_INTERVAL = timedelta(seconds=30)
 
@@ -68,12 +65,10 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     return True
 
 
-class DataCoordinator():
+class DataCoordinator:
     """Class to manage fetching data from the API."""
 
-    def __init__(
-            self, mqtt_client: MqttClient
-    ) -> None:
+    def __init__(self, mqtt_client: MqttClient) -> None:
         """Initialize."""
         self.platforms = []
         self.mqtt_client = mqtt_client

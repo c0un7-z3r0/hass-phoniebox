@@ -8,7 +8,7 @@ from typing import Any
 from homeassistant.components.switch import SwitchEntity
 from homeassistant.helpers.entity import EntityCategory
 
-from .const import DOMAIN, CONF_PHONIEBOX_NAME, NAME, VERSION, BINARY_SWITCHES
+from .const import BINARY_SWITCHES, CONF_PHONIEBOX_NAME, DOMAIN, NAME, VERSION
 from .sensor import _slug, string_to_bool
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
@@ -25,7 +25,9 @@ def discover_sensors(topic, entry, coordinator) -> PhonieboxBinarySwitch | None:
         return
 
     if domain in ["gpio", "rfid"]:
-        return PhonieboxBinarySwitch(entry, coordinator, domain, domain, "start", "stop", EntityCategory.CONFIG)
+        return PhonieboxBinarySwitch(
+            entry, coordinator, domain, domain, "start", "stop", EntityCategory.CONFIG
+        )
 
     if domain == "random":
         return PhonieboxBinarySwitch(entry, coordinator, domain, "playershuffle")
@@ -68,8 +70,16 @@ class PhonieboxBinarySwitch(SwitchEntity, ABC):
 
     _attr_should_poll = False
 
-    def __init__(self, config_entry, coordinator, name, mqtt_topic=None, mqtt_on_payload="", mqtt_off_payload="",
-                 entity_category=None):
+    def __init__(
+        self,
+        config_entry,
+        coordinator,
+        name,
+        mqtt_topic=None,
+        mqtt_on_payload="",
+        mqtt_off_payload="",
+        entity_category=None,
+    ):
         """Initialize the sensor."""
         self.config_entry = config_entry
         self.mqtt_client = coordinator.mqtt_client
@@ -98,8 +108,12 @@ class PhonieboxBinarySwitch(SwitchEntity, ABC):
 
     async def async_turn_on(self, **kwargs: Any) -> None:
         """Turn the entity on."""
-        await self.mqtt_client.async_publish("cmd/" + self._mqtt_topic, self._mqtt_on_payload)
+        await self.mqtt_client.async_publish(
+            "cmd/" + self._mqtt_topic, self._mqtt_on_payload
+        )
 
     async def async_turn_off(self, **kwargs: Any) -> None:
         """Turn the entity on."""
-        await self.mqtt_client.async_publish("cmd/" + self._mqtt_topic, self._mqtt_off_payload)
+        await self.mqtt_client.async_publish(
+            "cmd/" + self._mqtt_topic, self._mqtt_off_payload
+        )

@@ -4,11 +4,7 @@ import logging
 import voluptuous as vol
 from homeassistant import config_entries
 
-from .const import (
-    DOMAIN,
-    CONF_PHONIEBOX_NAME,
-    CONF_MQTT_BASE_TOPIC
-)
+from .const import CONF_MQTT_BASE_TOPIC, CONF_PHONIEBOX_NAME, DOMAIN
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
 
@@ -47,10 +43,13 @@ class BlueprintFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
             step_id="user",
             data_schema=vol.Schema(
                 {
-                    vol.Required(CONF_PHONIEBOX_NAME, default=user_input[CONF_PHONIEBOX_NAME]): str,
-                    vol.Required(CONF_MQTT_BASE_TOPIC, default=user_input[CONF_MQTT_BASE_TOPIC]): str,
+                    vol.Required(
+                        CONF_PHONIEBOX_NAME, default=user_input[CONF_PHONIEBOX_NAME]
+                    ): str,
+                    vol.Required(
+                        CONF_MQTT_BASE_TOPIC, default=user_input[CONF_MQTT_BASE_TOPIC]
+                    ): str,
                 }
             ),
             errors=self._errors,
         )
-

@@ -4,17 +4,16 @@ from abc import ABC, ABCMeta
 
 from homeassistant.components.media_player import MediaPlayerEntity
 from homeassistant.components.media_player.const import MEDIA_TYPE_MUSIC
-from homeassistant.const import (
-    STATE_IDLE,
-)
+from homeassistant.const import STATE_IDLE
 
 from .const import (
-    DOMAIN,
-    NAME,
-    VERSION,
     ATTRIBUTION,
     CONF_PHONIEBOX_NAME,
-    SUPPORT_MQTTMEDIAPLAYER, PHONIEBOX_STATE_TO_HA
+    DOMAIN,
+    NAME,
+    PHONIEBOX_STATE_TO_HA,
+    SUPPORT_MQTTMEDIAPLAYER,
+    VERSION,
 )
 from .sensor import string_to_bool
 
@@ -33,7 +32,7 @@ class IntegrationBlueprintMediaPlayer(MediaPlayerEntity, ABC):
     _attr_supported_features = SUPPORT_MQTTMEDIAPLAYER
 
     def __init__(self, coordinator, config_entry, hass):
-        _LOGGER.debug('media player __init__')
+        _LOGGER.debug("media player __init__")
 
         self.config_entry = config_entry
         self.coordinator = coordinator
@@ -88,11 +87,15 @@ class IntegrationBlueprintMediaPlayer(MediaPlayerEntity, ABC):
         elif changed_attribute_name == "maxvolume":
             self._max_volume = float(new_value)
         elif changed_attribute_name == "duration":
-            self._attr_media_duration = sum(x * int(t) for x, t in zip([3600, 60, 1], new_value.split(":")))
+            self._attr_media_duration = sum(
+                x * int(t) for x, t in zip([3600, 60, 1], new_value.split(":"))
+            )
         elif changed_attribute_name == "track":
             self._attr_media_track = int(new_value)
         elif changed_attribute_name == "elapsed":
-            self._attr_media_position = sum(x * int(t) for x, t in zip([3600, 60, 1], new_value.split(":")))
+            self._attr_media_position = sum(
+                x * int(t) for x, t in zip([3600, 60, 1], new_value.split(":"))
+            )
         elif changed_attribute_name == "artist":
             self._attr_media_artist = new_value
         elif changed_attribute_name == "title":
