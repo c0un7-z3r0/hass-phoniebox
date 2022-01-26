@@ -3,13 +3,14 @@ from __future__ import annotations
 
 import logging
 
-from homeassistant.components.binary_sensor import BinarySensorEntity, BinarySensorDeviceClass
+from homeassistant.components.binary_sensor import (
+    BinarySensorDeviceClass,
+    BinarySensorEntity,
+)
 from homeassistant.config_entries import ConfigEntries
 from homeassistant.util import slugify
 
-from .const import (
-    DOMAIN, CONF_PHONIEBOX_NAME, BOOLEAN_SENSORS, NAME, VERSION,
-)
+from .const import BOOLEAN_SENSORS, CONF_PHONIEBOX_NAME, DOMAIN, NAME, VERSION
 from .sensor import _slug, string_to_bool
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
@@ -77,7 +78,12 @@ class BinaryPhonieboxSensor(BinarySensorEntity):
 
     _attr_should_poll = False
 
-    def __init__(self, config_entry: ConfigEntries, name: str, device_class: BinarySensorDeviceClass = None):
+    def __init__(
+        self,
+        config_entry: ConfigEntries,
+        name: str,
+        device_class: BinarySensorDeviceClass = None,
+    ):
         self.config_entry = config_entry
         self.entity_id = _slug(name, config_entry.data[CONF_PHONIEBOX_NAME])
         self._attr_name = name

@@ -2,14 +2,19 @@
 import logging
 
 from homeassistant.components.sensor import SensorDeviceClass, SensorEntity
-from homeassistant.const import (
-    TEMP_CELSIUS,
-    DATA_GIGABYTES,
-)
+from homeassistant.const import DATA_GIGABYTES, TEMP_CELSIUS
 from homeassistant.util import slugify
 
-from .const import DOMAIN, NAME, VERSION, CONF_PHONIEBOX_NAME, IGNORE_SENSORS, GIGABYTE_SENSORS, STRING_SENSORS, \
-    BOOLEAN_SENSORS
+from .const import (
+    BOOLEAN_SENSORS,
+    CONF_PHONIEBOX_NAME,
+    DOMAIN,
+    GIGABYTE_SENSORS,
+    IGNORE_SENSORS,
+    NAME,
+    STRING_SENSORS,
+    VERSION,
+)
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
 
@@ -32,24 +37,38 @@ def discover_sensors(topic, payload, entry):
             return float(temp_str.split("'")[0])
 
         return GenericPhonieboxSensor(
-            entry, topic, domain, unit, device_class=SensorDeviceClass.TEMPERATURE, extract_value=temp_string_to_float
+            entry,
+            topic,
+            domain,
+            unit,
+            device_class=SensorDeviceClass.TEMPERATURE,
+            extract_value=temp_string_to_float,
         )
 
     if domain in GIGABYTE_SENSORS:
         unit = DATA_GIGABYTES
         return GenericPhonieboxSensor(
-            entry, topic, domain, unit,
+            entry,
+            topic,
+            domain,
+            unit,
         )
 
     if domain == "state" and len(parts) == 2:
         unit = None
         return GenericPhonieboxSensor(
-            entry, topic, "state", unit,
+            entry,
+            topic,
+            "state",
+            unit,
         )
     if domain == "state" and len(parts) == 3:
         unit = None
         return GenericPhonieboxSensor(
-            entry, topic, "player state", unit,
+            entry,
+            topic,
+            "player state",
+            unit,
         )
 
     if domain == "file":
@@ -58,7 +77,9 @@ def discover_sensors(topic, payload, entry):
         def find_source(file):
             return file.split(":")[0]
 
-        return GenericPhonieboxSensor(entry, topic, "source", unit, extract_value=find_source)
+        return GenericPhonieboxSensor(
+            entry, topic, "source", unit, extract_value=find_source
+        )
 
     if domain in STRING_SENSORS:
         unit = None
@@ -95,6 +116,7 @@ async def async_setup_entry(hass, entry, async_add_devices):
 
     await coordinator.mqtt_client.async_subscribe("#", received_msg)
 
+
 def string_to_bool(value):
     """
     boolean string to boolean converter
@@ -110,11 +132,20 @@ def _slug(name, poniebox_name):
 
 
 class GenericPhonieboxSensor(SensorEntity):
-    """ Generic blueprint for a phoniebox sensor """
+    """Generic blueprint for a phoniebox sensor"""
 
     _attr_should_poll = False
 
-    def __init__(self, config_entry, topic, name, units, icon=None, device_class=None, extract_value=None):
+    def __init__(
+        self,
+        config_entry,
+        topic,
+        name,
+        units,
+        icon=None,
+        device_class=None,
+        extract_value=None,
+    ):
         """Initialize the sensor."""
         self.config_entry = config_entry
         self.entity_id = _slug(name, config_entry.data[CONF_PHONIEBOX_NAME])
