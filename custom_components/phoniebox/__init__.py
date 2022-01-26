@@ -2,7 +2,7 @@
 Custom integration to integrate Phoniebox with Home Assistant.
 
 For more details about this integration, please refer to
-https://github.com/custom-components/integration_blueprint
+https://github.com/c0un7-z3r0/hass-phoniebox
 """
 import asyncio
 import logging
@@ -38,11 +38,6 @@ class MqttClient:
 async def async_setup(hass: HomeAssistant, config: Config):
     """Set up this integration using YAML is not supported."""
     return True
-
-
-async def debug_log(msg):
-    _LOGGER.info("Received message from phoniebox %s", msg)
-
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     """Set up this integration using UI."""
