@@ -25,4 +25,4 @@ jobs:
         uses: home-assistant/actions/helpers/version@master
 
       - name: "Set version number"
-        run: echo {{steps.version.outputs.version}}
+        run: echo ${{steps.version.outputs.version}}
