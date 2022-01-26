@@ -20,6 +20,8 @@ _Component to integrate your [phoniebox][phoniebox-repo] with [home-assistant][h
 - enable / disable rfid or gpio from home assistant as configuration
 - switch to toggle mute or random 
 
+Overview of what Features of Phoniebox have been implemented can be found in the [issues](https://github.com/c0un7-z3r0/hass-phoniebox/issues?q=is%3Aissue+is%3Aopen+label%3Aenhancement). 
+
 ## How does it work
 Once the custom component is installed you can add your phoniebox as device in home assistant. 
 You can name your phoniebox and configure the MQTT base topic in case you have multiple phonieboxes.

@@ -30,15 +30,6 @@ async def async_setup_entry(hass, entry, async_add_devices):
     coordinator = hass.data[DOMAIN][entry.entry_id]
     async_add_devices([IntegrationBlueprintMediaPlayer(coordinator, entry, hass)])
 
-    platform = entry.async_get_current_platform()
-    platform.async_register_entity_service(
-        SERVICE_SET_TIMER,
-        {
-            vol.Required('sleep_time'): cv.time_period,
-        },
-        "set_sleep_timer",
-    )
-
 
 class IntegrationBlueprintMediaPlayer(MediaPlayerEntity, ABC):
     _attr_should_poll = False
