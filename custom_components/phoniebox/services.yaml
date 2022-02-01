@@ -1,0 +1,17 @@
+set_volume_steps:
+  name: Set Volume Steps
+  description: Set the Volume Change % in your Phoniebox
+  target:
+    entity:
+      integration: phoniebox
+      domain: media_player
+  fields:
+    vol_steps:
+      name: Steps
+      description: Volume steps to set.
+      required: true
+      selector:
+        number:
+          min: 0
+          max: 100
+          step: 1

@@ -1,7 +1,8 @@
 """BlueprintEntity class"""
 import logging
-from abc import ABC, ABCMeta
+from abc import ABC
 
+import voluptuous as vol
 from homeassistant.components.media_player import MediaPlayerEntity
 from homeassistant.components.media_player.const import (
     MEDIA_TYPE_MUSIC,
@@ -9,6 +10,7 @@ from homeassistant.components.media_player.const import (
     REPEAT_MODE_ONE,
 )
 from homeassistant.const import STATE_IDLE
+from homeassistant.helpers import entity_platform
 
 from .const import (
     ATTRIBUTION,
@@ -29,6 +31,11 @@ async def async_setup_entry(hass, entry, async_add_devices):
     """Setup media player platform."""
     coordinator = hass.data[DOMAIN][entry.entry_id]
     async_add_devices([IntegrationBlueprintMediaPlayer(coordinator, entry, hass)])
+
+    platform = entity_platform.async_get_current_platform()
+
+    platform.async_register_entity_service("set_volume_steps", {vol.Required('vol_steps'): int, },
+                                           "async_set_volume_steps", )
 
 
 class IntegrationBlueprintMediaPlayer(MediaPlayerEntity, ABC):
@@ -180,3 +187,7 @@ class IntegrationBlueprintMediaPlayer(MediaPlayerEntity, ABC):
     async def async_set_volume_level(self, volume):
         """Set volume level, range 0..1."""
         await self.mqtt_client.async_publish("cmd/setvolume", int(volume * 100))
+
+    async def async_set_volume_steps(self, steps):
+        """Set volume steps, range 0..100."""
+        await self.mqtt_client.async_publish("cmd/setvolstep", steps)
