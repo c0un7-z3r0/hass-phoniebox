@@ -38,6 +38,8 @@ async def async_setup_entry(hass, entry, async_add_devices):
                                            "async_set_volume_steps", )
     platform.async_register_entity_service("set_max_volume", {vol.Required('max_volume'): int, },
                                            "async_set_max_volume", )
+    platform.async_register_entity_service("set_idle_shutdown_timer", {vol.Required('idle_time'): int, },
+                                           "async_set_idle_shutdown_timer", )
 
 
 class IntegrationBlueprintMediaPlayer(MediaPlayerEntity, ABC):
@@ -197,3 +199,7 @@ class IntegrationBlueprintMediaPlayer(MediaPlayerEntity, ABC):
     async def async_set_max_volume(self, max_volume):
         """Set max volume, range 0..100."""
         await self.mqtt_client.async_publish("cmd/setmaxvolume", max_volume)
+
+    async def async_set_idle_shutdown_timer(self, idle_time):
+        """Set idle shutdown timer, in minutes, range 0..60."""
+        await self.mqtt_client.async_publish("cmd/setidletime", idle_time)

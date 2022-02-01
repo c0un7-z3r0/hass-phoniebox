@@ -33,3 +33,21 @@ set_max_volume:
           min: 0
           max: 100
           step: 1
+
+set_idle_shutdown_timer:
+  name: Set Idle Shutdown Timer
+  description: Set the idle shutdown timer of your Phoniebox
+  target:
+    entity:
+      integration: phoniebox
+      domain: media_player
+  fields:
+    idle_time:
+      name: Idle Time
+      description: Time that phoniebox is idle till shutdown. 0 to turn idle timer off.
+      required: true
+      selector:
+        number:
+          min: 0
+          max: 60
+          step: 1
