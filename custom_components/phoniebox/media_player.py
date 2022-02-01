@@ -36,6 +36,8 @@ async def async_setup_entry(hass, entry, async_add_devices):
 
     platform.async_register_entity_service("set_volume_steps", {vol.Required('vol_steps'): int, },
                                            "async_set_volume_steps", )
+    platform.async_register_entity_service("set_max_volume", {vol.Required('max_volume'): int, },
+                                           "async_set_max_volume", )
 
 
 class IntegrationBlueprintMediaPlayer(MediaPlayerEntity, ABC):
@@ -188,6 +190,10 @@ class IntegrationBlueprintMediaPlayer(MediaPlayerEntity, ABC):
         """Set volume level, range 0..1."""
         await self.mqtt_client.async_publish("cmd/setvolume", int(volume * 100))
 
-    async def async_set_volume_steps(self, steps):
+    async def async_set_volume_steps(self, vol_steps):
         """Set volume steps, range 0..100."""
-        await self.mqtt_client.async_publish("cmd/setvolstep", steps)
+        await self.mqtt_client.async_publish("cmd/setvolstep", vol_steps)
+
+    async def async_set_max_volume(self, max_volume):
+        """Set max volume, range 0..100."""
+        await self.mqtt_client.async_publish("cmd/setmaxvolume", max_volume)
