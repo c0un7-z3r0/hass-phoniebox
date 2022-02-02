@@ -46,6 +46,8 @@ class IntegrationBlueprintMediaPlayer(MediaPlayerEntity, ABC):
         self._attr_unique_id = self.config_entry.entry_id
         self._attr_state = STATE_IDLE
         self._attr_volume_level = 0.0
+        self._attr_media_duration = 0
+        self._attr_media_position = 0
         self._attr_is_volume_muted = False
         self._attr_shuffle = False
         self._attr_repeat = REPEAT_MODE_OFF
@@ -56,6 +58,10 @@ class IntegrationBlueprintMediaPlayer(MediaPlayerEntity, ABC):
         self._attr_media_title = None
         self._attr_media_track = None
         self._vol_steps = 5
+
+    @property
+    def max_volume(self):
+        return self._max_volume
 
     @property
     def device_info(self):
