@@ -7,6 +7,7 @@ from typing import Any
 
 from homeassistant.components.switch import SwitchEntity
 from homeassistant.helpers.entity import EntityCategory
+from homeassistant.util import slugify
 
 from .const import (
     BINARY_SWITCHES,
@@ -17,7 +18,7 @@ from .const import (
     PHONIEBOX_STOP,
     VERSION,
 )
-from .sensor import _slug, string_to_bool
+from .utils import string_to_bool
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
 
@@ -79,6 +80,10 @@ async def async_setup_entry(hass, entry, async_add_devices):
     await coordinator.mqtt_client.async_subscribe("#", received_msg)
 
 
+def _slug(name, poniebox_name):
+    return f"switch.phoniebox_{poniebox_name}_{slugify(name)}"
+
+
 class PhonieboxBinarySwitch(SwitchEntity, ABC):
     """phoniebox switch class."""
 
@@ -125,9 +130,11 @@ class PhonieboxBinarySwitch(SwitchEntity, ABC):
         await self.mqtt_client.async_publish(
             "cmd/" + self._mqtt_topic, self._mqtt_on_payload
         )
+        self.set_state(True)
 
     async def async_turn_off(self, **kwargs: Any) -> None:
         """Turn the entity on."""
         await self.mqtt_client.async_publish(
             "cmd/" + self._mqtt_topic, self._mqtt_off_payload
         )
+        self.set_state(False)
