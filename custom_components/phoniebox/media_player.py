@@ -1,6 +1,6 @@
 """BlueprintEntity class"""
 import logging
-from abc import ABC, ABCMeta
+from abc import ABC
 
 from homeassistant.components.media_player import MediaPlayerEntity
 from homeassistant.components.media_player.const import (
@@ -20,7 +20,7 @@ from .const import (
     SUPPORT_MQTTMEDIAPLAYER,
     VERSION,
 )
-from .sensor import string_to_bool
+from .utils import bool_to_string, string_to_bool
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
 
@@ -37,8 +37,6 @@ class IntegrationBlueprintMediaPlayer(MediaPlayerEntity, ABC):
     _attr_supported_features = SUPPORT_MQTTMEDIAPLAYER
 
     def __init__(self, coordinator, config_entry, hass):
-        _LOGGER.debug("media player __init__")
-
         self.config_entry = config_entry
         self.coordinator = coordinator
         self.mqtt_client = coordinator.mqtt_client
@@ -46,6 +44,8 @@ class IntegrationBlueprintMediaPlayer(MediaPlayerEntity, ABC):
         self._attr_unique_id = self.config_entry.entry_id
         self._attr_state = STATE_IDLE
         self._attr_volume_level = 0.0
+        self._attr_media_duration = 0
+        self._attr_media_position = 0
         self._attr_is_volume_muted = False
         self._attr_shuffle = False
         self._attr_repeat = REPEAT_MODE_OFF
@@ -56,6 +56,10 @@ class IntegrationBlueprintMediaPlayer(MediaPlayerEntity, ABC):
         self._attr_media_title = None
         self._attr_media_track = None
         self._vol_steps = 5
+
+    @property
+    def max_volume(self):
+        return self._max_volume
 
     @property
     def device_info(self):
@@ -77,8 +81,6 @@ class IntegrationBlueprintMediaPlayer(MediaPlayerEntity, ABC):
 
     async def async_set_attributes(self, msg):
         """Set volume level."""
-        # _LOGGER.debug('async_set_attributes ----> %s', msg)
-
         changed_attribute_name = msg.topic.split("/")[2]
         new_value = msg.payload
         if changed_attribute_name == "volume":
@@ -133,8 +135,7 @@ class IntegrationBlueprintMediaPlayer(MediaPlayerEntity, ABC):
 
     async def async_mute_volume(self, mute):
         """Send the media player the command for muting the volume."""
-        _LOGGER.debug("mute: %s", mute)
-        await self.mqtt_client.async_publish("cmd/mute", mute)
+        await self.mqtt_client.async_publish("cmd/mute", bool_to_string(mute))
 
     async def async_media_play(self):
         """Send play command."""
@@ -158,17 +159,16 @@ class IntegrationBlueprintMediaPlayer(MediaPlayerEntity, ABC):
 
     async def async_media_seek(self, position):
         """Send seek command."""
-        _LOGGER.debug("position: %s", position)
         await self.mqtt_client.async_publish("cmd/playerseek", position)
 
     async def async_set_shuffle(self, shuffle):
         """Enable/disable shuffle mode."""
-        _LOGGER.debug("shuffle: %s", shuffle)
-        await self.mqtt_client.async_publish("cmd/playershuffle", shuffle)
+        await self.mqtt_client.async_publish(
+            "cmd/playershuffle", bool_to_string(shuffle)
+        )
 
     async def async_set_repeat(self, repeat):
         """Set repeat mode."""
-        _LOGGER.debug("repeat: %s", repeat)
         await self.mqtt_client.async_publish(
             "cmd/playerrepeat", HA_REPEAT_TO_PHONIEBOX[repeat]
         )

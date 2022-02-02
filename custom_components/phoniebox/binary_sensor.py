@@ -10,7 +10,8 @@ from homeassistant.components.binary_sensor import (
 from homeassistant.config_entries import ConfigEntries
 
 from .const import BOOLEAN_SENSORS, CONF_PHONIEBOX_NAME, DOMAIN, NAME, VERSION
-from .sensor import _slug, string_to_bool
+from .sensor import _slug
+from .utils import string_to_bool
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
 
@@ -19,8 +20,6 @@ def find_device_class(domain: str) -> BinarySensorDeviceClass | None:
     """
     Based on the domain find the corresponding device class
     """
-    if domain == "state":
-        return BinarySensorDeviceClass.CONNECTIVITY
     return None
 
 
@@ -32,9 +31,6 @@ def discover_sensors(topic, entry):
     domain = parts[2] if len(parts) == 3 else parts[1]
 
     if domain not in BOOLEAN_SENSORS:
-        return
-
-    if domain == "state" and len(parts) == 3:
         return
 
     device_class = find_device_class(domain)

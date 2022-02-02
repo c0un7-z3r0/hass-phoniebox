@@ -5,31 +5,74 @@ on:
   schedule:
     - cron: '0 0 * * *'
 jobs:
-  ci:
-    runs-on: ubuntu-latest
+  validate:
+    runs-on: "ubuntu-latest"
+    name: Validate
     steps:
-      - uses: actions/checkout@v2
-        name: Download repo
+      - name: Check out code from GitHub
+        uses: "actions/checkout@v2"
+
+      - name: Setup Python
+        uses: "actions/setup-python@v1"
         with:
-          fetch-depth: 0
-      - uses: actions/setup-python@v2
-        name: Setup Python
-        with:
-          python-version: '3.9.x'
-      - uses: actions/cache@v2
-        name: Cache
-        with:
-          path: |
-            ~/.cache/pip
-          key: custom-component-ci
-      - name: HACS Action
+          python-version: "3.9"
+
+      - name: HACS validation
         uses: hacs/action@main
         with:
           CATEGORY: integration
           ignore: brands
-      - uses: KTibow/ha-blueprint@stable
-        name: CI
+
+      - name: Hassfest validation
+        uses: home-assistant/actions/hassfest@master
+
+  analyze:
+    name: Analyze
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [ 'python' ]
+
+    steps:
+      - name: Check out code from GitHub
+        uses: "actions/checkout@v2"
+
+      # Initializes the CodeQL tools for scanning.
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v1
         with:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - uses: home-assistant/actions/hassfest@master
-     
+          languages: ${{ matrix.language }}
+      - name: Autobuild
+        uses: github/codeql-action/autobuild@v1
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v1
+
+  tests:
+    runs-on: "ubuntu-latest"
+    name: Run tests
+    steps:
+      - name: Check out code from GitHub
+        uses: "actions/checkout@v2"
+      - name: Setup Python
+        uses: "actions/setup-python@v1"
+        with:
+          python-version: "3.9"
+      - name: Install requirements
+        run: python3 -m pip install -r requirements_test.txt
+      - name: Run tests
+        run: |
+          pytest \
+            -qq \
+            --timeout=9 \
+            --durations=10 \
+            -n auto \
+            --cov custom_components.phoniebox \
+            -o console_output_style=count \
+            -p no:sugar \
+            test

@@ -15,13 +15,19 @@ from homeassistant.components.media_player.const import (
     SUPPORT_SELECT_SOURCE,
     SUPPORT_SHUFFLE_SET,
     SUPPORT_STOP,
+    SUPPORT_TURN_OFF,
     SUPPORT_VOLUME_MUTE,
     SUPPORT_VOLUME_SET,
     SUPPORT_VOLUME_STEP,
 )
 
 # Base component constants
-from homeassistant.const import STATE_IDLE, STATE_PAUSED, STATE_PLAYING
+from homeassistant.const import (
+    SERVICE_TURN_OFF,
+    STATE_IDLE,
+    STATE_PAUSED,
+    STATE_PLAYING,
+)
 
 NAME = "Phoniebox"
 DOMAIN = "phoniebox"
@@ -55,6 +61,8 @@ SUPPORT_MQTTMEDIAPLAYER = (
     | SUPPORT_SHUFFLE_SET
     | SUPPORT_REPEAT_SET
     | SUPPORT_STOP
+    | SUPPORT_SEEK
+    | SUPPORT_TURN_OFF
 )
 
 PHONIEBOX_REPEAT_OFF = "off"
