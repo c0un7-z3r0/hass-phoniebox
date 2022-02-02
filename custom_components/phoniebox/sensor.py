@@ -84,6 +84,7 @@ def discover_sensors(topic, payload, entry):
     if domain in STRING_SENSORS:
         unit = None
         return GenericPhonieboxSensor(entry, topic, domain, unit)
+
     _LOGGER.info(
         "-> Potential new sensor %(domain)s => %(payload)s",
         {"domain": domain, "payload": payload},
@@ -115,26 +116,6 @@ async def async_setup_entry(hass, entry, async_add_devices):
                 store[sensor.name].set_event(msg.payload)
 
     await coordinator.mqtt_client.async_subscribe("#", received_msg)
-
-
-def string_to_bool(value):
-    """
-    boolean string to boolean converter
-    """
-    if value == "true":
-        return True
-    else:
-        return False
-
-
-def bool_to_string(value: bool):
-    """
-    boolean string to boolean converter
-    """
-    if value:
-        return "true"
-    else:
-        return "false"
 
 
 def _slug(name, poniebox_name):

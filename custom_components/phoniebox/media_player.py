@@ -20,7 +20,7 @@ from .const import (
     SUPPORT_MQTTMEDIAPLAYER,
     VERSION,
 )
-from .sensor import string_to_bool, bool_to_string
+from .utils import string_to_bool, bool_to_string
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
 
