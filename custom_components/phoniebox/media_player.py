@@ -20,7 +20,7 @@ from .const import (
     SUPPORT_MQTTMEDIAPLAYER,
     VERSION,
 )
-from .utils import string_to_bool, bool_to_string
+from .utils import bool_to_string, string_to_bool
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
 
@@ -163,7 +163,9 @@ class IntegrationBlueprintMediaPlayer(MediaPlayerEntity, ABC):
 
     async def async_set_shuffle(self, shuffle):
         """Enable/disable shuffle mode."""
-        await self.mqtt_client.async_publish("cmd/playershuffle", bool_to_string(shuffle))
+        await self.mqtt_client.async_publish(
+            "cmd/playershuffle", bool_to_string(shuffle)
+        )
 
     async def async_set_repeat(self, repeat):
         """Set repeat mode."""

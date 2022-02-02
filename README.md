@@ -5,6 +5,7 @@
 [![License][license-shield]](LICENSE)
 [![hacs][hacsbadge]][hacs]
 ![Project Maintenance][maintenance-shield]
+![Project Maintenance](https://img.shields.io/maintenance/yes/2022.svg?style=for-the-badge)
 [![Validate](https://github.com/c0un7-z3r0/hass-phoniebox/actions/workflows/validate.yml/badge.svg)](https://github.com/c0un7-z3r0/hass-phoniebox/actions/workflows/validate.yml)
 
 

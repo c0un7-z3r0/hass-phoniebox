@@ -128,14 +128,14 @@ class GenericPhonieboxSensor(SensorEntity):
     _attr_should_poll = False
 
     def __init__(
-            self,
-            config_entry,
-            topic,
-            name,
-            units,
-            icon=None,
-            device_class=None,
-            extract_value=None,
+        self,
+        config_entry,
+        topic,
+        name,
+        units,
+        icon=None,
+        device_class=None,
+        extract_value=None,
     ):
         """Initialize the sensor."""
         self.config_entry = config_entry
