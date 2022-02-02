@@ -10,7 +10,8 @@ from homeassistant.components.binary_sensor import (
 from homeassistant.config_entries import ConfigEntries
 
 from .const import BOOLEAN_SENSORS, CONF_PHONIEBOX_NAME, DOMAIN, NAME, VERSION
-from .sensor import _slug, string_to_bool
+from .sensor import _slug
+from .utils import string_to_bool
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
 

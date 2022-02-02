@@ -53,7 +53,7 @@ def skip_notifications_fixture():
 
 
 @pytest.fixture
-async def mock_phoniebox(hass, config):
+async def mock_phoniebox(hass, config) -> MockConfigEntry:
     """Set up the Phoniebox integration in Home Assistant."""
     entry = MockConfigEntry(domain=DOMAIN, data=config, entry_id=config[CONF_PHONIEBOX_NAME])
 
