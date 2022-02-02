@@ -127,6 +127,16 @@ def string_to_bool(value):
         return False
 
 
+def bool_to_string(value: bool):
+    """
+    boolean string to boolean converter
+    """
+    if value:
+        return "true"
+    else:
+        return "false"
+
+
 def _slug(name, poniebox_name):
     return f"sensor.phoniebox_{poniebox_name}_{slugify(name)}"
 
@@ -137,14 +147,14 @@ class GenericPhonieboxSensor(SensorEntity):
     _attr_should_poll = False
 
     def __init__(
-        self,
-        config_entry,
-        topic,
-        name,
-        units,
-        icon=None,
-        device_class=None,
-        extract_value=None,
+            self,
+            config_entry,
+            topic,
+            name,
+            units,
+            icon=None,
+            device_class=None,
+            extract_value=None,
     ):
         """Initialize the sensor."""
         self.config_entry = config_entry
