@@ -3,16 +3,12 @@ from homeassistant.components.media_player.const import (
     REPEAT_MODE_ALL,
     REPEAT_MODE_OFF,
     REPEAT_MODE_ONE,
-    SUPPORT_CLEAR_PLAYLIST,
-    SUPPORT_GROUPING,
     SUPPORT_NEXT_TRACK,
     SUPPORT_PAUSE,
     SUPPORT_PLAY,
-    SUPPORT_PLAY_MEDIA,
     SUPPORT_PREVIOUS_TRACK,
     SUPPORT_REPEAT_SET,
     SUPPORT_SEEK,
-    SUPPORT_SELECT_SOURCE,
     SUPPORT_SHUFFLE_SET,
     SUPPORT_STOP,
     SUPPORT_TURN_OFF,
@@ -23,7 +19,6 @@ from homeassistant.components.media_player.const import (
 
 # Base component constants
 from homeassistant.const import (
-    SERVICE_TURN_OFF,
     STATE_IDLE,
     STATE_PAUSED,
     STATE_PLAYING,
@@ -46,11 +41,29 @@ BINARY_SENSOR_DEVICE_CLASS = "connectivity"
 SERVICE_VOLUME_STEPS = "set_volume_steps"
 SERVICE_MAX_VOLUME = "set_max_volume"
 SERVICE_IDLE_TIMER = "set_idle_shutdown_timer"
+SERVICE_SHUTDOWN_AFTER = "set_shutdown_after"
+SERVICE_SLEEP_TIMER = "set_sleep_timer"
+SERVICE_RFID = "set_rfid"
+SERVICE_GPIO = "set_gpio"
+SERVICE_SWIPE_CARD = "swipe_card"
+SERVICE_PLAY_FOLDER = "play_folder"
+SERVICE_PLAY_FOLDER_RECURSIVE = "play_folder_recursive"
+SERVICE_PLAYER_SEEK = "player_seek"
+
+SERVICE_REWIND = "player_rewind"
+SERVICE_REPLAY = "player_replay"
+SERVICE_SCAN = "scan"
+SERVICE_TURN_OFF_SILENT = "silent_turn_off"
+SERVICE_RESTART = "restart"
+SERVICE_DISABLE_WIFI = "disable_wifi"
 
 # Custom Attributes
 ATTR_VOLUME_STEPS = "volume_steps"
 ATTR_MAX_VOLUME = "max_volume"
 ATTR_IDLE_TIME = "idle_time"
+ATTR_IS_STARTED = "is_started"
+ATTR_CARD_ID = "card_id"
+ATTR_FOLDER_NAME = "folder_name"
 
 # Platforms
 BINARY_SENSOR = "binary_sensor"
@@ -61,18 +74,18 @@ PLATFORMS = [SENSOR, BINARY_SENSOR, SWITCH, MEDIA_PLAYER]
 
 # Player
 SUPPORT_MQTTMEDIAPLAYER = (
-    SUPPORT_PAUSE
-    | SUPPORT_VOLUME_STEP
-    | SUPPORT_PREVIOUS_TRACK
-    | SUPPORT_VOLUME_SET
-    | SUPPORT_NEXT_TRACK
-    | SUPPORT_PLAY
-    | SUPPORT_VOLUME_MUTE
-    | SUPPORT_SHUFFLE_SET
-    | SUPPORT_REPEAT_SET
-    | SUPPORT_STOP
-    | SUPPORT_SEEK
-    | SUPPORT_TURN_OFF
+        SUPPORT_PAUSE
+        | SUPPORT_VOLUME_STEP
+        | SUPPORT_PREVIOUS_TRACK
+        | SUPPORT_VOLUME_SET
+        | SUPPORT_NEXT_TRACK
+        | SUPPORT_PLAY
+        | SUPPORT_VOLUME_MUTE
+        | SUPPORT_SHUFFLE_SET
+        | SUPPORT_REPEAT_SET
+        | SUPPORT_STOP
+        | SUPPORT_SEEK
+        | SUPPORT_TURN_OFF
 )
 
 PHONIEBOX_REPEAT_OFF = "off"
@@ -87,6 +100,11 @@ HA_REPEAT_TO_PHONIEBOX = {
 
 PHONIEBOX_START = "start"
 PHONIEBOX_STOP = "stop"
+
+TO_PHONIEBOX_START_STOP = {
+    "true": PHONIEBOX_START,
+    "false": PHONIEBOX_STOP
+}
 
 PHONIEBOX_STATE_PLAY = "play"
 PHONIEBOX_STATE_STOP = "stop"

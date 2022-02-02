@@ -2,8 +2,6 @@
 import logging
 from abc import ABC
 
-import homeassistant.helpers.config_validation as cv
-import voluptuous as vol
 from homeassistant.components.media_player import MediaPlayerEntity
 from homeassistant.components.media_player.const import (
     MEDIA_TYPE_MUSIC,
@@ -11,7 +9,6 @@ from homeassistant.components.media_player.const import (
     REPEAT_MODE_ONE,
 )
 from homeassistant.const import STATE_IDLE
-from homeassistant.helpers import entity_platform
 
 from .const import (
     ATTRIBUTION,
@@ -21,70 +18,19 @@ from .const import (
     NAME,
     PHONIEBOX_STATE_TO_HA,
     SUPPORT_MQTTMEDIAPLAYER,
-    VERSION, SERVICE_VOLUME_STEPS, SERVICE_MAX_VOLUME, SERVICE_IDLE_TIMER, ATTR_VOLUME_STEPS, ATTR_MAX_VOLUME,
-    ATTR_IDLE_TIME,
+    VERSION, TO_PHONIEBOX_START_STOP,
 )
+from .services import async_register_custom_services
 from .utils import bool_to_string, string_to_bool
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
 
-minutes_int = vol.All(
-    vol.Coerce(int),
-    vol.Range(min=0, max=60))
 
-percent_int = vol.All(
-    vol.Coerce(int),
-    vol.Range(min=0, max=100))
-
-
-async
-
-def async_setup_entry(hass, entry, async_add_devices):
+async def async_setup_entry(hass, entry, async_add_devices):
     """Setup media player platform."""
     coordinator = hass.data[DOMAIN][entry.entry_id]
     async_add_devices([IntegrationBlueprintMediaPlayer(coordinator, entry, hass)])
-
-    platform = entity_platform.async_get_current_platform()
-
-    platform.async_register_entity_service(
-        SERVICE_VOLUME_STEPS,
-        vol.All(
-            cv.make_entity_service_schema(
-                {vol.Required(ATTR_VOLUME_STEPS): percent_int}
-            ),
-        ),
-        "async_set_volume_steps",
-    )
-
-    platform.async_register_entity_service(
-        SERVICE_MAX_VOLUME,
-        vol.All(
-            cv.make_entity_service_schema(
-                {vol.Required(ATTR_MAX_VOLUME): percent_int}
-            ),
-        ),
-        "async_set_max_volume",
-    )
-
-    platform.async_register_entity_service(
-        SERVICE_IDLE_TIMER,
-        vol.All(
-            cv.make_entity_service_schema(
-                {vol.Required(ATTR_IDLE_TIME): minutes_int}
-            ),
-        ),
-        "async_set_idle_shutdown_timer",
-    )
-
-    platform.async_register_entity_service(
-        SERVICE_IDLE_TIMER,
-        vol.All(
-            cv.make_entity_service_schema(
-                {vol.Required(ATTR_IDLE_TIME): minutes_int}
-            ),
-        ),
-        "async_set_idle_shutdown_timer",
-    )
+    await async_register_custom_services()
 
 
 class IntegrationBlueprintMediaPlayer(MediaPlayerEntity, ABC):
@@ -245,6 +191,62 @@ class IntegrationBlueprintMediaPlayer(MediaPlayerEntity, ABC):
         """Set max volume, range 0..100."""
         await self.mqtt_client.async_publish("cmd/setmaxvolume", max_volume)
 
-    async def async_set_idle_shutdown_timer(self, idle_time):
-        """Set idle shutdown timer, in minutes, range 0..60."""
-        await self.mqtt_client.async_publish("cmd/setidletime", idle_time)
+    async def async_set_idle_shutdown_timer(self, time):
+        """Set timer when box is idle to shut down after, in minutes, range 0..60."""
+        await self.mqtt_client.async_publish("cmd/setidletime", time)
+
+    async def async_set_shutdown_after(self, time):
+        """Set timer to shut down the box, in minutes, range 0..60."""
+        await self.mqtt_client.async_publish("cmd/shutdownafter", time)
+
+    async def async_set_sleep_timer(self, time):
+        """Set timer to pause the box, in minutes, range 0..60."""
+        await self.mqtt_client.async_publish("cmd/playerstopafter", time)
+
+    async def async_toggle_rfid(self, is_started):
+        """Start or stop the rfid service."""
+        await self.mqtt_client.async_publish("cmd/rfid", TO_PHONIEBOX_START_STOP[bool_to_string(is_started)])
+
+    async def async_toggle_gpio(self, is_started):
+        """Start or stop the gpio service."""
+        await self.mqtt_client.async_publish("cmd/gpio", TO_PHONIEBOX_START_STOP[bool_to_string(is_started)])
+
+    async def async_swipe_card(self, card_id):
+        """Swipe a card id."""
+        await self.mqtt_client.async_publish("cmd/swipecard", card_id)
+
+    async def async_play_folder(self, folder_name):
+        """Play a folder. Important needs folder name not path."""
+        await self.mqtt_client.async_publish("cmd/playfolder", folder_name)
+
+    async def async_play_folder_recursive(self, folder_name):
+        """Play a folder. Important needs folder name not path."""
+        await self.mqtt_client.async_publish("cmd/playfolderrecursive", folder_name)
+
+    async def async_seek(self, seek_position):
+        """Seek to position"""
+        await self.mqtt_client.async_publish("cmd/playerseek", seek_position)
+
+    async def async_rewind(self):
+        """Rewind command"""
+        await self.mqtt_client.async_publish("cmd/playerrewind", {})
+
+    async def async_replay(self):
+        """Replay command"""
+        await self.mqtt_client.async_publish("cmd/playerreplay", {})
+
+    async def async_scan(self):
+        """Scan command"""
+        await self.mqtt_client.async_publish("cmd/scan", {})
+
+    async def async_turn_off_silent(self):
+        """Turn the media player off silently."""
+        await self.mqtt_client.async_publish("cmd/shutdownsilent", {})
+
+    async def async_restart(self):
+        """Restart the media player."""
+        await self.mqtt_client.async_publish("cmd/reboot", {})
+
+    async def async_disable_wifi(self):
+        """Disables wifi. Not sure if this should be activated"""
+        raise NotImplementedError()

@@ -42,7 +42,7 @@ set_idle_shutdown_timer:
       integration: phoniebox
       domain: media_player
   fields:
-    idle_time:
+    time:
       name: Idle Time
       description: Time that phoniebox is idle till shutdown. 0 to turn idle timer off.
       required: true
@@ -51,3 +51,182 @@ set_idle_shutdown_timer:
           min: 0
           max: 60
           step: 1
+
+set_shutdown_after:
+  name: Set Shutdown After
+  description: Set timer to shut down the box
+  target:
+    entity:
+      integration: phoniebox
+      domain: media_player
+  fields:
+    time:
+      name: Time
+      description: Time that phoniebox will shutdown after. 0 to turn timer off.
+      required: true
+      selector:
+        number:
+          min: 0
+          max: 60
+          step: 1
+
+set_sleep_timer:
+  name: Set Sleep Timer
+  description: Set sleep timer to pause the current playing audio
+  target:
+    entity:
+      integration: phoniebox
+      domain: media_player
+  fields:
+    time:
+      name: Time
+      description: Time until the player should pause. 0 to turn timer off.
+      required: true
+      selector:
+        number:
+          min: 0
+          max: 60
+          step: 1
+
+set_rfid:
+  name: Toggle RFID reader
+  description: Activate or deactivate the RFID reader
+  target:
+    entity:
+      integration: phoniebox
+      domain: media_player
+  fields:
+    is_started:
+      name: RFID reader active
+      description: True/false for active/deactive
+      required: true
+      selector:
+        boolean:
+
+set_gpio:
+  name: Toggle GPIO buttons
+  description: Activate or deactivate the GPIO buttons
+  target:
+    entity:
+      integration: phoniebox
+      domain: media_player
+  fields:
+    is_started:
+      name: GPIO buttons active
+      description: True/false for active/deactive
+      required: true
+      selector:
+        boolean:
+
+swipe_card:
+  name: Swipe a card
+  description: Trigger a card action by swipping a card
+  target:
+    entity:
+      integration: phoniebox
+      domain: media_player
+  fields:
+    card_id:
+      name: Card ID
+      description: The id of the card to swipe
+      required: true
+      example: "0000000000"
+      selector:
+        text:
+
+play_folder:
+  name: Play a folder
+  description: Play a folder
+  target:
+    entity:
+      integration: phoniebox
+      domain: media_player
+  fields:
+    folder_name:
+      name: Folder Name
+      description: The name of the folder
+      required: true
+      selector:
+        text:
+
+play_folder_recursive:
+  name: Play a folder (recursive)
+  description: Play a folder recursive
+  target:
+    entity:
+      integration: phoniebox
+      domain: media_player
+  fields:
+    folder_name:
+      name: Folder Name
+      description: The name of the folder
+      required: true
+      selector:
+        text:
+
+player_seek:
+  name: Seek
+  description: Seek forward or backwards by given seconds
+  target:
+    entity:
+      integration: phoniebox
+      domain: media_player
+  fields:
+    seek_position:
+      name: Position
+      description: Position to seek to.
+      required: true
+      selector:
+        number:
+          min: -60
+          max: 60
+          step: 1
+          mode: box
+
+player_rewind:
+  name: Rewind
+  description: Send the phoniebox the command to rewind.
+  target:
+    entity:
+      integration: phoniebox
+      domain: media_player
+
+player_replay:
+  name: Replay
+  description: Send the phoniebox the command to replay.
+  target:
+    entity:
+      integration: phoniebox
+      domain: media_player
+
+scan:
+  name: Scan
+  description: Send the phoniebox the command to scan.
+  target:
+    entity:
+      integration: phoniebox
+      domain: media_player
+
+silent_turn_off:
+  name: Turn off (silent)
+  description: Turn a phoniebox off silently.
+  target:
+    entity:
+      integration: phoniebox
+      domain: media_player
+
+restart:
+  name: Restart
+  description: Send the phoniebox the command to restart.
+  target:
+    entity:
+      integration: phoniebox
+      domain: media_player
+
+disable_wifi:
+  name: Disable WIFI
+  description: Send the phoniebox the command to disable wifi.
+  target:
+    entity:
+      integration: phoniebox
+      domain: media_player
