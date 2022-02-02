@@ -14,15 +14,15 @@
 #
 # See here for more info: https://docs.pytest.org/en/latest/fixture.html (note that
 # pytest includes fixtures OOB which you can use as defined on this page)
-from unittest.mock import patch, MagicMock
-
-from homeassistant.core import HomeAssistant
-
-from custom_components.phoniebox.const import DOMAIN, CONF_PHONIEBOX_NAME
-from .const import MOCK_CONFIG
+from unittest.mock import MagicMock, patch
 
 import pytest
+from homeassistant.core import HomeAssistant
 from pytest_homeassistant_custom_component.common import MockConfigEntry
+
+from custom_components.phoniebox.const import CONF_PHONIEBOX_NAME, DOMAIN
+
+from .const import MOCK_CONFIG
 
 pytest_plugins = "pytest_homeassistant_custom_component"
 
@@ -47,7 +47,7 @@ def auto_enable_custom_integrations(enable_custom_integrations):
 def skip_notifications_fixture():
     """Skip notification calls."""
     with patch("homeassistant.components.persistent_notification.async_create"), patch(
-            "homeassistant.components.persistent_notification.async_dismiss"
+        "homeassistant.components.persistent_notification.async_dismiss"
     ):
         yield
 
@@ -55,7 +55,9 @@ def skip_notifications_fixture():
 @pytest.fixture
 async def mock_phoniebox(hass, config) -> MockConfigEntry:
     """Set up the Phoniebox integration in Home Assistant."""
-    entry = MockConfigEntry(domain=DOMAIN, data=config, entry_id=config[CONF_PHONIEBOX_NAME])
+    entry = MockConfigEntry(
+        domain=DOMAIN, data=config, entry_id=config[CONF_PHONIEBOX_NAME]
+    )
 
     entry.add_to_hass(hass)
 
@@ -63,4 +65,3 @@ async def mock_phoniebox(hass, config) -> MockConfigEntry:
     await hass.async_block_till_done()
 
     return entry
-

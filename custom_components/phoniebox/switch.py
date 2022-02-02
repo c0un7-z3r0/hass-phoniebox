@@ -90,14 +90,14 @@ class PhonieboxBinarySwitch(SwitchEntity, ABC):
     _attr_should_poll = False
 
     def __init__(
-            self,
-            config_entry,
-            coordinator,
-            name,
-            mqtt_topic=None,
-            mqtt_on_payload="",
-            mqtt_off_payload="",
-            entity_category=None,
+        self,
+        config_entry,
+        coordinator,
+        name,
+        mqtt_topic=None,
+        mqtt_on_payload="",
+        mqtt_off_payload="",
+        entity_category=None,
     ):
         """Initialize the sensor."""
         self.config_entry = config_entry
@@ -138,4 +138,3 @@ class PhonieboxBinarySwitch(SwitchEntity, ABC):
             "cmd/" + self._mqtt_topic, self._mqtt_off_payload
         )
         self.set_state(False)
-
