@@ -250,3 +250,5 @@ class IntegrationBlueprintMediaPlayer(MediaPlayerEntity, ABC):
     async def async_disable_wifi(self):
         """Disables wifi. Not sure if this should be activated"""
         raise NotImplementedError()
+        # await self.mqtt_client.async_publish("cmd/disablewifi", {})
+

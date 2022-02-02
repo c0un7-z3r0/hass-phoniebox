@@ -229,14 +229,3 @@ async def test_service_restart(
     mqtt_mock.async_publish.assert_called_once_with(
         "test_phoniebox/cmd/reboot", "{}", 0, False
     )
-
-async def test_service_disable_wifi(
-        hass, mqtt_client_mock, mqtt_mock, mock_phoniebox, config, media_player_entry
-):
-    data = {ATTR_ENTITY_ID: media_player_entry.entity_id}
-    await hass.services.async_call(
-        DOMAIN, SERVICE_DISABLE_WIFI, data, blocking=True
-    )
-    mqtt_mock.async_publish.assert_called_once_with(
-        "test_phoniebox/cmd/disablewifi", "{}", 0, False
-    )

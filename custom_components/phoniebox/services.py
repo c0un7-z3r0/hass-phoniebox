@@ -143,4 +143,3 @@ async def async_register_custom_services():
     platform.async_register_entity_service(SERVICE_SCAN, {}, "async_scan", )
     platform.async_register_entity_service(SERVICE_TURN_OFF_SILENT, {}, "async_turn_off_silent", )
     platform.async_register_entity_service(SERVICE_RESTART, {}, "async_restart", )
-    platform.async_register_entity_service(SERVICE_DISABLE_WIFI, {}, "async_disable_wifi", )

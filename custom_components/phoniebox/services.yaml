@@ -222,11 +222,3 @@ restart:
     entity:
       integration: phoniebox
       domain: media_player
-
-disable_wifi:
-  name: Disable WIFI
-  description: Send the phoniebox the command to disable wifi.
-  target:
-    entity:
-      integration: phoniebox
-      domain: media_player
