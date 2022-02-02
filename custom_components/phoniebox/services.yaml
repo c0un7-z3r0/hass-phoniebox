@@ -6,7 +6,7 @@ set_volume_steps:
       integration: phoniebox
       domain: media_player
   fields:
-    vol_steps:
+    volume_steps:
       name: Steps
       description: Volume steps to set.
       required: true

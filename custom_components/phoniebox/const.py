@@ -42,6 +42,16 @@ ICON = "mdi:format-quote-close"
 # Device classes
 BINARY_SENSOR_DEVICE_CLASS = "connectivity"
 
+# Custom Services
+SERVICE_VOLUME_STEPS = "set_volume_steps"
+SERVICE_MAX_VOLUME = "set_max_volume"
+SERVICE_IDLE_TIMER = "set_idle_shutdown_timer"
+
+# Custom Attributes
+ATTR_VOLUME_STEPS = "volume_steps"
+ATTR_MAX_VOLUME = "max_volume"
+ATTR_IDLE_TIME = "idle_time"
+
 # Platforms
 BINARY_SENSOR = "binary_sensor"
 SENSOR = "sensor"

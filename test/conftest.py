@@ -14,14 +14,14 @@
 #
 # See here for more info: https://docs.pytest.org/en/latest/fixture.html (note that
 # pytest includes fixtures OOB which you can use as defined on this page)
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
 import pytest
-from homeassistant.core import HomeAssistant
+from homeassistant.helpers import entity_registry as er
+from homeassistant.helpers.entity_registry import RegistryEntry
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 from custom_components.phoniebox.const import CONF_PHONIEBOX_NAME, DOMAIN
-
 from .const import MOCK_CONFIG
 
 pytest_plugins = "pytest_homeassistant_custom_component"
@@ -47,7 +47,7 @@ def auto_enable_custom_integrations(enable_custom_integrations):
 def skip_notifications_fixture():
     """Skip notification calls."""
     with patch("homeassistant.components.persistent_notification.async_create"), patch(
-        "homeassistant.components.persistent_notification.async_dismiss"
+            "homeassistant.components.persistent_notification.async_dismiss"
     ):
         yield
 
@@ -64,4 +64,12 @@ async def mock_phoniebox(hass, config) -> MockConfigEntry:
     assert await hass.config_entries.async_setup(entry.entry_id)
     await hass.async_block_till_done()
 
+    return entry
+
+
+@pytest.fixture(name="media_player_entry")
+def media_player_entry(hass):
+    """Create hass config fixture."""
+    entity_registry = er.async_get(hass)
+    entry: RegistryEntry = entity_registry.async_get("media_player.phoniebox_test_box")
     return entry

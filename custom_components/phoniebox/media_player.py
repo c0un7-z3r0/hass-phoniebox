@@ -2,6 +2,7 @@
 import logging
 from abc import ABC
 
+import homeassistant.helpers.config_validation as cv
 import voluptuous as vol
 from homeassistant.components.media_player import MediaPlayerEntity
 from homeassistant.components.media_player.const import (
@@ -20,26 +21,70 @@ from .const import (
     NAME,
     PHONIEBOX_STATE_TO_HA,
     SUPPORT_MQTTMEDIAPLAYER,
-    VERSION,
+    VERSION, SERVICE_VOLUME_STEPS, SERVICE_MAX_VOLUME, SERVICE_IDLE_TIMER, ATTR_VOLUME_STEPS, ATTR_MAX_VOLUME,
+    ATTR_IDLE_TIME,
 )
 from .utils import bool_to_string, string_to_bool
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
 
+minutes_int = vol.All(
+    vol.Coerce(int),
+    vol.Range(min=0, max=60))
 
-async def async_setup_entry(hass, entry, async_add_devices):
+percent_int = vol.All(
+    vol.Coerce(int),
+    vol.Range(min=0, max=100))
+
+
+async
+
+def async_setup_entry(hass, entry, async_add_devices):
     """Setup media player platform."""
     coordinator = hass.data[DOMAIN][entry.entry_id]
     async_add_devices([IntegrationBlueprintMediaPlayer(coordinator, entry, hass)])
 
     platform = entity_platform.async_get_current_platform()
 
-    platform.async_register_entity_service("set_volume_steps", {vol.Required('vol_steps'): int, },
-                                           "async_set_volume_steps", )
-    platform.async_register_entity_service("set_max_volume", {vol.Required('max_volume'): int, },
-                                           "async_set_max_volume", )
-    platform.async_register_entity_service("set_idle_shutdown_timer", {vol.Required('idle_time'): int, },
-                                           "async_set_idle_shutdown_timer", )
+    platform.async_register_entity_service(
+        SERVICE_VOLUME_STEPS,
+        vol.All(
+            cv.make_entity_service_schema(
+                {vol.Required(ATTR_VOLUME_STEPS): percent_int}
+            ),
+        ),
+        "async_set_volume_steps",
+    )
+
+    platform.async_register_entity_service(
+        SERVICE_MAX_VOLUME,
+        vol.All(
+            cv.make_entity_service_schema(
+                {vol.Required(ATTR_MAX_VOLUME): percent_int}
+            ),
+        ),
+        "async_set_max_volume",
+    )
+
+    platform.async_register_entity_service(
+        SERVICE_IDLE_TIMER,
+        vol.All(
+            cv.make_entity_service_schema(
+                {vol.Required(ATTR_IDLE_TIME): minutes_int}
+            ),
+        ),
+        "async_set_idle_shutdown_timer",
+    )
+
+    platform.async_register_entity_service(
+        SERVICE_IDLE_TIMER,
+        vol.All(
+            cv.make_entity_service_schema(
+                {vol.Required(ATTR_IDLE_TIME): minutes_int}
+            ),
+        ),
+        "async_set_idle_shutdown_timer",
+    )
 
 
 class IntegrationBlueprintMediaPlayer(MediaPlayerEntity, ABC):
@@ -192,9 +237,9 @@ class IntegrationBlueprintMediaPlayer(MediaPlayerEntity, ABC):
         """Set volume level, range 0..1."""
         await self.mqtt_client.async_publish("cmd/setvolume", int(volume * 100))
 
-    async def async_set_volume_steps(self, vol_steps):
+    async def async_set_volume_steps(self, volume_steps):
         """Set volume steps, range 0..100."""
-        await self.mqtt_client.async_publish("cmd/setvolstep", vol_steps)
+        await self.mqtt_client.async_publish("cmd/setvolstep", volume_steps)
 
     async def async_set_max_volume(self, max_volume):
         """Set max volume, range 0..100."""

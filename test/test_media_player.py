@@ -26,8 +26,7 @@ from homeassistant.const import (
     SERVICE_VOLUME_SET,
     SERVICE_VOLUME_UP,
 )
-from homeassistant.helpers import entity_registry as er
-from homeassistant.helpers.entity_registry import RegistryEntry
+
 from pytest_homeassistant_custom_component.common import async_fire_mqtt_message
 
 from custom_components.phoniebox.const import (
@@ -37,13 +36,6 @@ from custom_components.phoniebox.const import (
     SUPPORT_MQTTMEDIAPLAYER,
 )
 
-
-@pytest.fixture(name="media_player_entry")
-def media_player_entry(hass):
-    """Create hass config fixture."""
-    entity_registry = er.async_get(hass)
-    entry: RegistryEntry = entity_registry.async_get("media_player.phoniebox_test_box")
-    return entry
 
 
 async def test_device_registry(
