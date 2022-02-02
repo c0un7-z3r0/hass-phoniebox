@@ -14,11 +14,23 @@
 #
 # See here for more info: https://docs.pytest.org/en/latest/fixture.html (note that
 # pytest includes fixtures OOB which you can use as defined on this page)
-from unittest.mock import patch
+from unittest.mock import patch, MagicMock
+
+from homeassistant.core import HomeAssistant
+
+from custom_components.phoniebox.const import DOMAIN, CONF_PHONIEBOX_NAME
+from .const import MOCK_CONFIG
 
 import pytest
+from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 pytest_plugins = "pytest_homeassistant_custom_component"
+
+
+@pytest.fixture(name="config")
+def config_fixture():
+    """Create hass config fixture."""
+    return MOCK_CONFIG
 
 
 # This fixture enables loading custom integrations in all tests.
@@ -35,6 +47,20 @@ def auto_enable_custom_integrations(enable_custom_integrations):
 def skip_notifications_fixture():
     """Skip notification calls."""
     with patch("homeassistant.components.persistent_notification.async_create"), patch(
-        "homeassistant.components.persistent_notification.async_dismiss"
+            "homeassistant.components.persistent_notification.async_dismiss"
     ):
         yield
+
+
+@pytest.fixture
+async def mock_phoniebox(hass, config):
+    """Set up the Phoniebox integration in Home Assistant."""
+    entry = MockConfigEntry(domain=DOMAIN, data=config, entry_id=config[CONF_PHONIEBOX_NAME])
+
+    entry.add_to_hass(hass)
+
+    assert await hass.config_entries.async_setup(entry.entry_id)
+    await hass.async_block_till_done()
+
+    return entry
+

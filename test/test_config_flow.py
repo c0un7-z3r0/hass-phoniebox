@@ -1,11 +1,10 @@
 """Test phoniebox config flow."""
 from unittest.mock import patch
 
-from homeassistant import config_entries, data_entry_flow
 import pytest
-from custom_components.phoniebox.const import DOMAIN
+from homeassistant import config_entries, data_entry_flow
 
-from .const import MOCK_CONFIG
+from custom_components.phoniebox.const import DOMAIN
 
 
 # This fixture bypasses the actual setup of the integration
@@ -25,7 +24,7 @@ def bypass_setup_fixture():
 
 
 # Here we simulate a successful config flow from the backend.
-async def test_successful_config_flow(hass):
+async def test_successful_config_flow(hass, config):
     """Test a successful config flow."""
     # Initialize a config flow
     result = await hass.config_entries.flow.async_init(
@@ -39,12 +38,12 @@ async def test_successful_config_flow(hass):
     # If a user were to enter `test_box` for name of the box and `test_phoniebox`
     # for the base mqtt topic, it would result in this function call
     result = await hass.config_entries.flow.async_configure(
-        result["flow_id"], user_input=MOCK_CONFIG
+        result["flow_id"], user_input=config
     )
 
     # Check that the config flow is complete and a new entry is created with
     # the input data
     assert result["type"] == data_entry_flow.RESULT_TYPE_CREATE_ENTRY
     assert result["title"] == "test_box"
-    assert result["data"] == MOCK_CONFIG
+    assert result["data"] == config
     assert result["result"]
