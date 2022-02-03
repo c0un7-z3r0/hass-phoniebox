@@ -70,6 +70,7 @@ class DataCoordinator:
         self.mqtt_client = mqtt_client
         self.sensors = {}
         self.switches = {}
+        self.buttons = {}
         self.version = "unknown"
 
 

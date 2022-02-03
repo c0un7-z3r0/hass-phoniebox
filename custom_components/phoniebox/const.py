@@ -21,7 +21,7 @@ from homeassistant.components.media_player.const import (
 from homeassistant.const import (
     STATE_IDLE,
     STATE_PAUSED,
-    STATE_PLAYING,
+    STATE_PLAYING, Platform,
 )
 
 NAME = "Phoniebox"
@@ -70,7 +70,7 @@ BINARY_SENSOR = "binary_sensor"
 SENSOR = "sensor"
 SWITCH = "switch"
 MEDIA_PLAYER = "media_player"
-PLATFORMS = [SENSOR, BINARY_SENSOR, SWITCH, MEDIA_PLAYER]
+PLATFORMS = [SENSOR, BINARY_SENSOR, SWITCH, MEDIA_PLAYER, Platform.BUTTON]
 
 # Player
 SUPPORT_MQTTMEDIAPLAYER = (
@@ -130,9 +130,9 @@ DEFAULT_NAME = DOMAIN
 BINARY_SWITCHES = [
     "gpio",
     "rfid",
-    "random",
     "mute",
 ]
+BUTTONS = ["random"]
 BOOLEAN_SENSORS = [
     "gpio",
     "rfid",
