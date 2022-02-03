@@ -34,6 +34,10 @@ class MqttClient:
         full_topic = self.base_topic + "/" + topic
         await mqtt.async_publish(self.hass, full_topic, payload)
 
+    async def async_publish_cmd(self, topic, payload) -> None:
+        """ Send a command to phoniebox. """
+        await self.async_publish("cmd/" + topic, payload)
+
 
 async def async_setup(hass: HomeAssistant, config: Config):
     """Set up this integration using YAML is not supported."""
