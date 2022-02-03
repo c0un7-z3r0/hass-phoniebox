@@ -42,7 +42,7 @@ async def test_device_registry(
     hass, mqtt_client_mock, mqtt_mock, mock_phoniebox, config, media_player_entry
 ):
     assert media_player_entry
-    assert media_player_entry.unique_id == "test_box"
+    assert media_player_entry.unique_id == "test_boxmedia_player.phoniebox_test_box"
     assert media_player_entry.domain == "media_player"
     assert media_player_entry.platform == "phoniebox"
     assert media_player_entry.disabled is False
