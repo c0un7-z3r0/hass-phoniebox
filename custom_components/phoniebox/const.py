@@ -21,7 +21,7 @@ from homeassistant.components.media_player.const import (
 from homeassistant.const import (
     STATE_IDLE,
     STATE_PAUSED,
-    STATE_PLAYING,
+    STATE_PLAYING, Platform,
 )
 
 NAME = "Phoniebox"
@@ -70,7 +70,7 @@ BINARY_SENSOR = "binary_sensor"
 SENSOR = "sensor"
 SWITCH = "switch"
 MEDIA_PLAYER = "media_player"
-PLATFORMS = [SENSOR, BINARY_SENSOR, SWITCH, MEDIA_PLAYER]
+PLATFORMS = [SENSOR, BINARY_SENSOR, SWITCH, MEDIA_PLAYER, Platform.BUTTON]
 
 # Player
 SUPPORT_MQTTMEDIAPLAYER = (
@@ -127,38 +127,124 @@ CONF_MQTT_BASE_TOPIC = "mqtt_base_topic"
 # Defaults
 DEFAULT_NAME = DOMAIN
 
+# Phoniebox attributes
+PHONIEBOX_ATTR_GPIO = "gpio"
+PHONIEBOX_ATTR_RFID = "rfid"
+PHONIEBOX_ATTR_MUTE = "mute"
+PHONIEBOX_ATTR_RANDOM = "random"
+PHONIEBOX_ATTR_SCAN = "scan"
+PHONIEBOX_ATTR_PLAYER_REWIND = "playerrewind"
+PHONIEBOX_ATTR_REPEAT = "repeat"
+PHONIEBOX_ATTR_THROTTLING = "throttling"
+PHONIEBOX_ATTR_VERSION = "version"
+PHONIEBOX_ATTR_LAST_CARD = "last_card"
+PHONIEBOX_ATTR_ALBUM = "album"
+PHONIEBOX_ATTR_ARTIST = "artist"
+PHONIEBOX_ATTR_ALBUM_ARTIST = "albumartist"
+PHONIEBOX_ATTR_EDITION = "edition"
+PHONIEBOX_ATTR_REMAINING_STOP_AFTER = "remaining_stopafter"
+PHONIEBOX_ATTR_REMAINING_SHUTDOWN_AFTER = "remaining_shutdownafter"
+PHONIEBOX_ATTR_REMAINING_IDLE = "remaining_idle"
+PHONIEBOX_ATTR_VOLUME_STEPS = "volstep"
+PHONIEBOX_ATTR_MAX_VOLUME = "maxvolume"
+PHONIEBOX_ATTR_IDLE_TIME = "idletime"
+PHONIEBOX_ATTR_DISK_AVAILABLE = "disk_avail"
+PHONIEBOX_ATTR_DISK_TOTAL = "disk_total"
+PHONIEBOX_ATTR_TITLE = "title"
+PHONIEBOX_ATTR_TRACK = "track"
+PHONIEBOX_ATTR_TRACK_DATE = "trackdate"
+PHONIEBOX_ATTR_ELAPSED = "elapsed"
+PHONIEBOX_ATTR_DURATION = "duration"
+PHONIEBOX_ATTR_VOLUME = "volume"
+
+# Phoniebox commands
+PHONIEBOX_CMD_DISABLE_WIFI = "disablewifi"
+PHONIEBOX_CMD_SCAN = "scan"
+PHONIEBOX_CMD_REBOOT = "reboot"
+PHONIEBOX_CMD_SHUTDOWN_SILENT = "shutdownsilent"
+PHONIEBOX_CMD_PLAYER_REPLAY = "playerreplay"
+PHONIEBOX_CMD_PLAYER_REWIND = "playerrewind"
+PHONIEBOX_CMD_PLAYER_SEEK = "playerseek"
+PHONIEBOX_CMD_PLAY_FOLDER_RECURSIVE = "playfolderrecursive"
+PHONIEBOX_CMD_PLAY_FOLDER = "playfolder"
+PHONIEBOX_CMD_SWIPE_CARD = "swipecard"
+PHONIEBOX_CMD_SET_GPIO = "gpio"
+PHONIEBOX_CMD_SET_RFID = "rfid"
+PHONIEBOX_CMD_PLAYER_STOP_AFTER = "playerstopafter"
+PHONIEBOX_CMD_SHUTDOWN_AFTER = "shutdownafter"
+PHONIEBOX_CMD_SET_IDLE_TIME = "setidletime"
+PHONIEBOX_CMD_SET_MAX_VOLUME = "setmaxvolume"
+PHONIEBOX_CMD_SET_VOLUME_STEPS = "setvolstep"
+PHONIEBOX_CMD_SET_VOLUME = "setvolume"
+PHONIEBOX_CMD_SHUTDOWN = "shutdown"
+PHONIEBOX_CMD_PLAYER_REPEAT = "playerrepeat"
+PHONIEBOX_CMD_PLAYER_SHUFFLE = "playershuffle"
+PHONIEBOX_CMD_PLAYER_NEXT = "playernext"
+PHONIEBOX_CMD_PLAYER_PREV = "playerprev"
+PHONIEBOX_CMD_PLAYER_STOP = "playerstop"
+PHONIEBOX_CMD_PLAYER_PAUSE = "playerpause"
+PHONIEBOX_CMD_PLAYER_PLAY = "playerplay"
+PHONIEBOX_CMD_MUTE = "mute"
+PHONIEBOX_CMD_VOLUME_DOWN = "volumedown"
+PHONIEBOX_CMD_VOLUME_UP = "volumeup"
+
 BINARY_SWITCHES = [
-    "gpio",
-    "rfid",
-    "random",
-    "mute",
+    PHONIEBOX_ATTR_GPIO,
+    PHONIEBOX_ATTR_RFID,
+    PHONIEBOX_ATTR_MUTE,
 ]
 BOOLEAN_SENSORS = [
-    "gpio",
-    "rfid",
-    "repeat",
-    "random",
-    "mute",
+    PHONIEBOX_ATTR_GPIO,
+    PHONIEBOX_ATTR_RFID,
+    PHONIEBOX_ATTR_REPEAT,
+    PHONIEBOX_ATTR_RANDOM,
+    PHONIEBOX_ATTR_MUTE,
 ]
 STRING_SENSORS = [
-    "throttling",
-    "version",
-    "last_card",
-    "album",
-    "artist",
-    "albumartist",
-    "edition",
+    PHONIEBOX_ATTR_THROTTLING,
+    PHONIEBOX_ATTR_VERSION,
+    PHONIEBOX_ATTR_LAST_CARD,
+    PHONIEBOX_ATTR_ALBUM,
+    PHONIEBOX_ATTR_ARTIST,
+    PHONIEBOX_ATTR_ALBUM_ARTIST,
+    PHONIEBOX_ATTR_EDITION
 ]
 NUMBER_SENSORS = [
-    "remaining_stopafter",
-    "remaining_shutdownafter",
-    "remaining_idle",
-    "volstep",
-    "maxvolume",
-    "idletime",
+    PHONIEBOX_ATTR_REMAINING_STOP_AFTER,
+    PHONIEBOX_ATTR_REMAINING_SHUTDOWN_AFTER,
+    PHONIEBOX_ATTR_REMAINING_IDLE,
+    PHONIEBOX_ATTR_VOLUME_STEPS,
+    PHONIEBOX_ATTR_MAX_VOLUME,
+    PHONIEBOX_ATTR_IDLE_TIME,
 ]
 GIGABYTE_SENSORS = [
-    "disk_avail",
-    "disk_total",
+    PHONIEBOX_ATTR_DISK_AVAILABLE,
+    PHONIEBOX_ATTR_DISK_TOTAL,
 ]
-IGNORE_SENSORS = ["title", "track", "trackdate", "elapsed", "duration", "volume"]
+IGNORE_SENSORS = [
+    PHONIEBOX_ATTR_TITLE,
+    PHONIEBOX_ATTR_TRACK,
+    PHONIEBOX_ATTR_TRACK_DATE,
+    PHONIEBOX_ATTR_ELAPSED,
+    PHONIEBOX_ATTR_DURATION,
+    PHONIEBOX_ATTR_VOLUME,
+]
+
+# Buttons
+BUTTON_SHUFFLE = "Shuffle"
+BUTTON_SCAN = "Start Scan"
+BUTTON_REWIND = "Rewind"
+BUTTON_REPLAY = "Replay"
+BUTTON_RESTART = "Restart Phoniebox"
+BUTTON_SHUTDOWN = "Shutdown Phoniebox"
+BUTTON_SHUTDOWN_SILENT = "Shutdown Phoniebox silently"
+
+ALL_BUTTONS = [
+    BUTTON_SCAN,
+    BUTTON_REWIND,
+    BUTTON_REPLAY,
+    BUTTON_RESTART,
+    BUTTON_SHUTDOWN,
+    BUTTON_SHUFFLE,
+    BUTTON_SHUTDOWN_SILENT,
+]
