@@ -77,17 +77,17 @@ async def test_switch_off(hass, mqtt_client_mock, mqtt_mock, mock_phoniebox, con
 
 async def test_switch_on(hass, mqtt_client_mock, mqtt_mock, mock_phoniebox, config):
     """Test that the sensor is updating properly on new value"""
-    async_fire_mqtt_message(hass, "test_phoniebox/attribute/random", "false")
+    async_fire_mqtt_message(hass, "test_phoniebox/attribute/gpio", "false")
     await hass.async_block_till_done()
 
-    switch_state: State = hass.states.get("switch.phoniebox_test_box_random_2")
+    switch_state: State = hass.states.get("switch.phoniebox_test_box_gpio_2")
     assert switch_state is not None
     assert switch_state.state == STATE_OFF
 
     data = {ATTR_ENTITY_ID: switch_state.entity_id}
     await hass.services.async_call("switch", SERVICE_TURN_ON, data, blocking=True)
     mqtt_mock.async_publish.assert_called_once_with(
-        "test_phoniebox/cmd/playershuffle", "", 0, False
+        "test_phoniebox/cmd/gpio", "start", 0, False
     )
 
     assert hass.states.get(switch_state.entity_id).state == STATE_ON
