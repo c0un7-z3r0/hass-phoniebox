@@ -27,7 +27,7 @@ from homeassistant.const import (
 NAME = "Phoniebox"
 DOMAIN = "phoniebox"
 DOMAIN_DATA = f"{DOMAIN}_data"
-VERSION = "0.2.0"
+VERSION = "0.3.0"
 ATTRIBUTION = ""
 ISSUE_URL = "https://github.com/c0un7-z3r0/hass-phoniebox/issues"
 
