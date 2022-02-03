@@ -1,83 +1,81 @@
-"""Buttons for phoniebox."""
+"""Buttons to control the phoniebox."""
 from __future__ import annotations
 
 import logging
 from abc import ABC
 
-from homeassistant.components.binary_sensor import (
-    BinarySensorDeviceClass,
-    BinarySensorEntity,
-)
 from homeassistant.components.button import ButtonEntity, ButtonDeviceClass
 from homeassistant.config_entries import ConfigEntries
 
 from . import DataCoordinator
-from .const import BOOLEAN_SENSORS, CONF_PHONIEBOX_NAME, DOMAIN, NAME, VERSION, BUTTONS
+from .const import CONF_PHONIEBOX_NAME, DOMAIN, PHONIEBOX_CMD_PLAYER_SHUFFLE, \
+    PHONIEBOX_CMD_SCAN, PHONIEBOX_CMD_PLAYER_REWIND, PHONIEBOX_CMD_PLAYER_REPLAY, PHONIEBOX_CMD_REBOOT, \
+    PHONIEBOX_CMD_SHUTDOWN, PHONIEBOX_CMD_SHUTDOWN_SILENT, BUTTON_RESTART, BUTTON_SHUFFLE, BUTTON_SCAN, BUTTON_REWIND, \
+    BUTTON_REPLAY, BUTTON_SHUTDOWN, BUTTON_SHUTDOWN_SILENT, ALL_BUTTONS
 from .entity import PhonieboxEntity
 from .sensor import _slug
-from .utils import string_to_bool
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
 
 
-def find_device_class(domain: str) -> BinarySensorDeviceClass | None:
+def find_device_class(name: str) -> ButtonDeviceClass | None:
     """
-    Based on the domain find the corresponding device class
+    Based on the button name find the corresponding device class
     """
+    if name == BUTTON_RESTART:
+        return ButtonDeviceClass.RESTART
     return None
 
 
-def find_mqtt_topic(domain: str) -> str | None:
-    if domain == "random":
-        return "playershuffle"
-
-    return None
-
-
-def discover_buttons(topic, entry, coordinator):
+def find_mqtt_topic(name: str) -> str:
     """
-    Based on the topic and entry create the correct binary sensor
+    Based on the button name find the corresponding mqtt command
     """
-    parts = topic.split("/")
-    domain = parts[2] if len(parts) == 3 else parts[1]
-
-    if domain not in BUTTONS:
-        return
-
-    return PhonieboxButton(
-        config_entry=entry,
-        name=domain,
-        coordinator=coordinator,
-        device_class=find_device_class(domain),
-        on_press_mqtt_topic=find_mqtt_topic(domain),
-    )
+    if name == BUTTON_SHUFFLE:
+        return PHONIEBOX_CMD_PLAYER_SHUFFLE
+    if name == BUTTON_SCAN:
+        return PHONIEBOX_CMD_SCAN
+    if name == BUTTON_REWIND:
+        return PHONIEBOX_CMD_PLAYER_REWIND
+    if name == BUTTON_REPLAY:
+        return PHONIEBOX_CMD_PLAYER_REPLAY
+    if name == BUTTON_RESTART:
+        return PHONIEBOX_CMD_REBOOT
+    if name == BUTTON_SHUTDOWN:
+        return PHONIEBOX_CMD_SHUTDOWN
+    if name == BUTTON_SHUTDOWN_SILENT:
+        return PHONIEBOX_CMD_SHUTDOWN_SILENT
 
 
 async def async_setup_entry(hass, entry, async_add_devices):
     """Setup button platform."""
     coordinator = hass.data[DOMAIN][entry.entry_id]
+    buttons: list[PhonieboxButton] = []
+    store = coordinator.buttons
 
-    def received_msg(msg):
-        buttons = discover_buttons(msg.topic, entry, coordinator)
-        store = coordinator.buttons
+    for button_name in ALL_BUTTONS:
+        buttons.append(
+            PhonieboxButton(
+                config_entry=entry,
+                name=button_name,
+                coordinator=coordinator,
+                device_class=find_device_class(button_name),
+                on_press_mqtt_topic=find_mqtt_topic(button_name),
+            )
+        )
 
-        if not buttons:
-            return
+    if len(buttons) == 0:
+        return
 
-        if isinstance(buttons, PhonieboxButton):
-            buttons = (buttons,)
-
-        for button in buttons:
-            if button.name not in store:
-                button.hass = hass
-                store[button.name] = button
-                _LOGGER.debug(
-                    "Registering buttons %(name)s",
-                    {"name": button.name},
-                )
-                async_add_devices((button,), True)
-
-    await coordinator.mqtt_client.async_subscribe("#", received_msg)
+    for button in buttons:
+        if button.name not in store:
+            button.hass = hass
+            store[button.name] = button
+            _LOGGER.debug(
+                "Registering buttons %(name)s",
+                {"name": button.name},
+            )
+            async_add_devices((button,), True)
 
 
 class PhonieboxButton(PhonieboxEntity, ButtonEntity, ABC):
