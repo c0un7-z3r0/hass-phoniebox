@@ -10,6 +10,7 @@ from homeassistant.components.binary_sensor import (
 from homeassistant.config_entries import ConfigEntries
 
 from .const import BOOLEAN_SENSORS, CONF_PHONIEBOX_NAME, DOMAIN, NAME, VERSION
+from .entity import PhonieboxEntity
 from .sensor import _slug
 from .utils import string_to_bool
 
@@ -23,7 +24,7 @@ def find_device_class(domain: str) -> BinarySensorDeviceClass | None:
     return None
 
 
-def discover_sensors(topic, entry):
+def discover_sensors(topic, entry, coordinator):
     """
     Based on the topic and entry create the correct binary sensor
     """
@@ -35,7 +36,7 @@ def discover_sensors(topic, entry):
 
     device_class = find_device_class(domain)
 
-    return BinaryPhonieboxSensor(entry, domain, device_class)
+    return BinaryPhonieboxSensor(entry, domain, coordinator, device_class )
 
 
 async def async_setup_entry(hass, entry, async_add_devices):
@@ -43,7 +44,7 @@ async def async_setup_entry(hass, entry, async_add_devices):
     coordinator = hass.data[DOMAIN][entry.entry_id]
 
     def received_msg(msg):
-        sensors = discover_sensors(msg.topic, entry)
+        sensors = discover_sensors(msg.topic, entry, coordinator)
         store = coordinator.sensors
 
         if not sensors:
@@ -68,7 +69,7 @@ async def async_setup_entry(hass, entry, async_add_devices):
     await coordinator.mqtt_client.async_subscribe("#", received_msg)
 
 
-class BinaryPhonieboxSensor(BinarySensorEntity):
+class BinaryPhonieboxSensor(PhonieboxEntity, BinarySensorEntity):
     """phoniebox binary_sensor class."""
 
     _attr_should_poll = False
@@ -77,24 +78,15 @@ class BinaryPhonieboxSensor(BinarySensorEntity):
         self,
         config_entry: ConfigEntries,
         name: str,
+        coordinator,
         device_class: BinarySensorDeviceClass = None,
     ):
-        self.config_entry = config_entry
+        super().__init__(config_entry, coordinator)
         self.entity_id = _slug(name, config_entry.data[CONF_PHONIEBOX_NAME])
         self._attr_name = name
-        self._attr_unique_id = config_entry.entry_id + self.entity_id
         self._attr_device_class = device_class
 
     def set_state(self, value: bool) -> None:
         """Update the binary sensor with the most recent value."""
         self._attr_is_on = value
         self.async_write_ha_state()
-
-    @property
-    def device_info(self):
-        return {
-            "identifiers": {(DOMAIN, self.config_entry.entry_id)},
-            "name": NAME,
-            "model": VERSION,
-            "manufacturer": NAME,
-        }

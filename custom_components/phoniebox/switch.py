@@ -18,6 +18,7 @@ from .const import (
     PHONIEBOX_STOP,
     VERSION,
 )
+from .entity import PhonieboxEntity
 from .utils import string_to_bool
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
@@ -84,7 +85,7 @@ def _slug(name, poniebox_name):
     return f"switch.phoniebox_{poniebox_name}_{slugify(name)}"
 
 
-class PhonieboxBinarySwitch(SwitchEntity, ABC):
+class PhonieboxBinarySwitch(PhonieboxEntity, SwitchEntity, ABC):
     """phoniebox switch class."""
 
     _attr_should_poll = False
@@ -99,11 +100,9 @@ class PhonieboxBinarySwitch(SwitchEntity, ABC):
         mqtt_off_payload="",
         entity_category=None,
     ):
+        super().__init__(config_entry, coordinator)
         """Initialize the sensor."""
-        self.config_entry = config_entry
-        self.mqtt_client = coordinator.mqtt_client
         self.entity_id = _slug(name, config_entry.data[CONF_PHONIEBOX_NAME])
-        self._attr_unique_id = config_entry.entry_id + self.entity_id
         self._attr_name = name
         self._name = "switch_" + name
         self._mqtt_on_payload = mqtt_on_payload
@@ -115,15 +114,6 @@ class PhonieboxBinarySwitch(SwitchEntity, ABC):
         """Update the binary sensor with the most recent value."""
         self._attr_is_on = value
         self.async_write_ha_state()
-
-    @property
-    def device_info(self):
-        return {
-            "identifiers": {(DOMAIN, self.config_entry.entry_id)},
-            "name": NAME,
-            "model": VERSION,
-            "manufacturer": NAME,
-        }
 
     async def async_turn_on(self, **kwargs: Any) -> None:
         """Turn the entity on."""
