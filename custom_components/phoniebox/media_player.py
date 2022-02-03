@@ -9,6 +9,7 @@ from homeassistant.components.media_player.const import (
     REPEAT_MODE_ONE,
 )
 from homeassistant.const import STATE_IDLE
+from homeassistant.util import slugify
 
 from .const import (
     ATTRIBUTION,
@@ -20,6 +21,7 @@ from .const import (
     SUPPORT_MQTTMEDIAPLAYER,
     VERSION, TO_PHONIEBOX_START_STOP,
 )
+from .entity import PhonieboxEntity
 from .services import async_register_custom_services
 from .utils import bool_to_string, string_to_bool
 
@@ -33,17 +35,20 @@ async def async_setup_entry(hass, entry, async_add_devices):
     await async_register_custom_services()
 
 
-class IntegrationBlueprintMediaPlayer(MediaPlayerEntity, ABC):
+def _slug(poniebox_name):
+    return f"media_player.phoniebox_{slugify(poniebox_name)}"
+
+
+class IntegrationBlueprintMediaPlayer(PhonieboxEntity, MediaPlayerEntity, ABC):
     _attr_should_poll = False
     _attr_media_content_type = MEDIA_TYPE_MUSIC
     _attr_supported_features = SUPPORT_MQTTMEDIAPLAYER
 
     def __init__(self, coordinator, config_entry, hass):
-        self.config_entry = config_entry
-        self.coordinator = coordinator
-        self.mqtt_client = coordinator.mqtt_client
+        super().__init__(config_entry, coordinator)
+
         self._attr_name = "Phoniebox " + config_entry.data[CONF_PHONIEBOX_NAME]
-        self._attr_unique_id = self.config_entry.entry_id
+        self.entity_id = _slug(config_entry.data[CONF_PHONIEBOX_NAME])
         self._attr_state = STATE_IDLE
         self._attr_volume_level = 0.0
         self._attr_media_duration = 0
@@ -62,24 +67,6 @@ class IntegrationBlueprintMediaPlayer(MediaPlayerEntity, ABC):
     @property
     def max_volume(self):
         return self._max_volume
-
-    @property
-    def device_info(self):
-        return {
-            "identifiers": {(DOMAIN, self.unique_id)},
-            "name": NAME,
-            "model": VERSION,
-            "manufacturer": NAME,
-        }
-
-    @property
-    def extra_state_attributes(self):
-        """Return the state attributes."""
-        return {
-            "attribution": ATTRIBUTION,
-            "id": self.config_entry.entry_id,
-            "integration": DOMAIN,
-        }
 
     async def async_set_attributes(self, msg):
         """Set volume level."""
@@ -251,4 +238,3 @@ class IntegrationBlueprintMediaPlayer(MediaPlayerEntity, ABC):
         """Disables wifi. Not sure if this should be activated"""
         raise NotImplementedError()
         # await self.mqtt_client.async_publish("cmd/disablewifi", {})
-

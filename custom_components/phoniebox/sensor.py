@@ -15,13 +15,14 @@ from .const import (
     STRING_SENSORS,
     VERSION,
 )
+from .entity import PhonieboxEntity
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
 
 DATA_PHONIEBOX = "data_phoniebox"
 
 
-def discover_sensors(topic, payload, entry):
+def discover_sensors(topic, payload, entry, coordinator):
     """Given a topic, dynamically create the right sensor type.
     Async friendly.
     """
@@ -38,7 +39,7 @@ def discover_sensors(topic, payload, entry):
 
         return GenericPhonieboxSensor(
             entry,
-            topic,
+            coordinator,
             domain,
             unit,
             device_class=SensorDeviceClass.TEMPERATURE,
@@ -49,7 +50,7 @@ def discover_sensors(topic, payload, entry):
         unit = DATA_GIGABYTES
         return GenericPhonieboxSensor(
             entry,
-            topic,
+            coordinator,
             domain,
             unit,
         )
@@ -58,7 +59,7 @@ def discover_sensors(topic, payload, entry):
         unit = None
         return GenericPhonieboxSensor(
             entry,
-            topic,
+            coordinator,
             "state",
             unit,
         )
@@ -66,7 +67,7 @@ def discover_sensors(topic, payload, entry):
         unit = None
         return GenericPhonieboxSensor(
             entry,
-            topic,
+            coordinator,
             "player state",
             unit,
         )
@@ -78,12 +79,15 @@ def discover_sensors(topic, payload, entry):
             return file.split(":")[0]
 
         return GenericPhonieboxSensor(
-            entry, topic, "source", unit, extract_value=find_source
+            entry, coordinator, "source", unit, extract_value=find_source
         )
+
+    if domain == "version":
+        coordinator.version = payload
 
     if domain in STRING_SENSORS:
         unit = None
-        return GenericPhonieboxSensor(entry, topic, domain, unit)
+        return GenericPhonieboxSensor(entry, coordinator, domain, unit)
 
     _LOGGER.info(
         "-> Potential new sensor %(domain)s => %(payload)s",
@@ -96,7 +100,7 @@ async def async_setup_entry(hass, entry, async_add_devices):
     coordinator = hass.data[DOMAIN][entry.entry_id]
 
     def received_msg(msg):
-        sensors = discover_sensors(msg.topic, msg.payload, entry)
+        sensors = discover_sensors(msg.topic, msg.payload, entry, coordinator)
         store = coordinator.sensors
 
         if not sensors:
@@ -122,7 +126,7 @@ def _slug(name, poniebox_name):
     return f"sensor.phoniebox_{poniebox_name}_{slugify(name)}"
 
 
-class GenericPhonieboxSensor(SensorEntity):
+class GenericPhonieboxSensor(PhonieboxEntity, SensorEntity):
     """Generic blueprint for a phoniebox sensor"""
 
     _attr_should_poll = False
@@ -130,19 +134,18 @@ class GenericPhonieboxSensor(SensorEntity):
     def __init__(
         self,
         config_entry,
-        topic,
+        coordinator,
         name,
         units,
         icon=None,
         device_class=None,
         extract_value=None,
     ):
+        super().__init__(config_entry, coordinator)
         """Initialize the sensor."""
-        self.config_entry = config_entry
         self.entity_id = _slug(name, config_entry.data[CONF_PHONIEBOX_NAME])
         self._attr_name = name
         # This mqtt topic for the sensor which is its uid
-        self._attr_unique_id = config_entry.entry_id + self.entity_id
         self._attr_native_unit_of_measurement = units
         self._attr_icon = icon
         self._attr_device_class = device_class
@@ -155,12 +158,3 @@ class GenericPhonieboxSensor(SensorEntity):
             value = self.extract_value(event)
         self._attr_native_value = value
         self.async_write_ha_state()
-
-    @property
-    def device_info(self):
-        return {
-            "identifiers": {(DOMAIN, self.config_entry.entry_id)},
-            "name": NAME,
-            "model": VERSION,
-            "manufacturer": NAME,
-        }

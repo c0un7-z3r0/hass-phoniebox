@@ -70,6 +70,7 @@ class DataCoordinator:
         self.mqtt_client = mqtt_client
         self.sensors = {}
         self.switches = {}
+        self.version = "unknown"
 
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
