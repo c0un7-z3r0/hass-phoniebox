@@ -36,7 +36,7 @@ async def test_switch_registry(
 
     entry: RegistryEntry = entity_registry.async_get("switch.phoniebox_test_box_gpio_2")
     assert entry
-    assert entry.unique_id == "test_boxswitch.phoniebox_test_box_gpio"
+    assert entry.unique_id == "test_box-switch.phoniebox_test_box_gpio"
 
     switch_state = hass.states.get("switch.phoniebox_test_box_gpio_2")
     assert switch_state is not None

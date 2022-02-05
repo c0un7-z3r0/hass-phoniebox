@@ -1,7 +1,6 @@
 """Switch platform for phoniebox."""
 from __future__ import annotations
 
-import logging
 from abc import ABC
 from typing import Any
 
@@ -16,12 +15,10 @@ from .const import (
     NAME,
     PHONIEBOX_START,
     PHONIEBOX_STOP,
-    VERSION,
+    VERSION, LOGGER,
 )
 from .entity import PhonieboxEntity
 from .utils import string_to_bool
-
-_LOGGER: logging.Logger = logging.getLogger(__package__)
 
 
 def discover_sensors(topic, entry, coordinator) -> PhonieboxBinarySwitch | None:
@@ -70,7 +67,7 @@ async def async_setup_entry(hass, entry, async_add_devices):
                 sensor.hass = hass
                 sensor.set_state(string_to_bool(msg.payload))
                 store[sensor.name] = sensor
-                _LOGGER.debug(
+                LOGGER.debug(
                     "Registering switch %(name)s",
                     {"name": sensor.name},
                 )
@@ -91,14 +88,14 @@ class PhonieboxBinarySwitch(PhonieboxEntity, SwitchEntity, ABC):
     _attr_should_poll = False
 
     def __init__(
-        self,
-        config_entry,
-        coordinator,
-        name,
-        mqtt_topic=None,
-        mqtt_on_payload="",
-        mqtt_off_payload="",
-        entity_category=None,
+            self,
+            config_entry,
+            coordinator,
+            name,
+            mqtt_topic=None,
+            mqtt_on_payload="",
+            mqtt_off_payload="",
+            entity_category=None,
     ):
         super().__init__(config_entry, coordinator)
         """Initialize the sensor."""
@@ -118,13 +115,13 @@ class PhonieboxBinarySwitch(PhonieboxEntity, SwitchEntity, ABC):
     async def async_turn_on(self, **kwargs: Any) -> None:
         """Turn the entity on."""
         await self.mqtt_client.async_publish(
-            "cmd/" + self._mqtt_topic, self._mqtt_on_payload
+            f"cmd/{self._mqtt_topic}", self._mqtt_on_payload
         )
         self.set_state(True)
 
     async def async_turn_off(self, **kwargs: Any) -> None:
         """Turn the entity on."""
         await self.mqtt_client.async_publish(
-            "cmd/" + self._mqtt_topic, self._mqtt_off_payload
+            f"cmd/{self._mqtt_topic}", self._mqtt_off_payload
         )
         self.set_state(False)

@@ -1,4 +1,5 @@
 """Constants for phoniebox."""
+from logging import Logger, getLogger
 from homeassistant.components.media_player.const import (
     REPEAT_MODE_ALL,
     REPEAT_MODE_OFF,
@@ -23,6 +24,8 @@ from homeassistant.const import (
     STATE_PAUSED,
     STATE_PLAYING, Platform,
 )
+
+LOGGER: Logger = getLogger(__package__)
 
 NAME = "Phoniebox"
 DOMAIN = "phoniebox"
