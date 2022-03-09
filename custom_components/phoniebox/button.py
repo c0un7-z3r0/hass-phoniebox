@@ -1,7 +1,6 @@
 """Buttons to control the phoniebox."""
 from __future__ import annotations
 
-import logging
 from abc import ABC
 
 from homeassistant.components.button import ButtonEntity, ButtonDeviceClass
@@ -11,11 +10,9 @@ from . import DataCoordinator
 from .const import CONF_PHONIEBOX_NAME, DOMAIN, PHONIEBOX_CMD_PLAYER_SHUFFLE, \
     PHONIEBOX_CMD_SCAN, PHONIEBOX_CMD_PLAYER_REWIND, PHONIEBOX_CMD_PLAYER_REPLAY, PHONIEBOX_CMD_REBOOT, \
     PHONIEBOX_CMD_SHUTDOWN, PHONIEBOX_CMD_SHUTDOWN_SILENT, BUTTON_RESTART, BUTTON_SHUFFLE, BUTTON_SCAN, BUTTON_REWIND, \
-    BUTTON_REPLAY, BUTTON_SHUTDOWN, BUTTON_SHUTDOWN_SILENT, ALL_BUTTONS
+    BUTTON_REPLAY, BUTTON_SHUTDOWN, BUTTON_SHUTDOWN_SILENT, ALL_BUTTONS, LOGGER
 from .entity import PhonieboxEntity
 from .sensor import _slug
-
-_LOGGER: logging.Logger = logging.getLogger(__package__)
 
 
 def find_device_class(name: str) -> ButtonDeviceClass | None:
@@ -71,7 +68,7 @@ async def async_setup_entry(hass, entry, async_add_devices):
         if button.name not in store:
             button.hass = hass
             store[button.name] = button
-            _LOGGER.debug(
+            LOGGER.debug(
                 "Registering buttons %(name)s",
                 {"name": button.name},
             )
@@ -100,6 +97,4 @@ class PhonieboxButton(PhonieboxEntity, ButtonEntity, ABC):
     async def async_press(self) -> None:
         """Press the button."""
         if self._on_press_mqtt_topic:
-            await self.mqtt_client.async_publish(
-                "cmd/" + self._on_press_mqtt_topic, {}
-            )
+            await self.mqtt_client.async_publish(f"cmd/{self._on_press_mqtt_topic}", {})

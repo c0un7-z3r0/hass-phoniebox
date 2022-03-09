@@ -28,7 +28,7 @@ async def test_sensor_registry(
         "sensor.phoniebox_test_box_version_2"
     )
     assert entry
-    assert entry.unique_id == "test_boxsensor.phoniebox_test_box_version"
+    assert entry.unique_id == "test_box-sensor.phoniebox_test_box_version"
 
     version_sensor_state = hass.states.get("sensor.phoniebox_test_box_version_2")
     assert version_sensor_state is not None

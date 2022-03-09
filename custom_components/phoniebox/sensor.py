@@ -1,5 +1,4 @@
 """Sensor platform for phoniebox."""
-import logging
 
 from homeassistant.components.sensor import SensorDeviceClass, SensorEntity
 from homeassistant.const import DATA_GIGABYTES, TEMP_CELSIUS
@@ -11,15 +10,9 @@ from .const import (
     DOMAIN,
     GIGABYTE_SENSORS,
     IGNORE_SENSORS,
-    NAME,
-    STRING_SENSORS,
-    VERSION,
+    STRING_SENSORS, LOGGER,
 )
 from .entity import PhonieboxEntity
-
-_LOGGER: logging.Logger = logging.getLogger(__package__)
-
-DATA_PHONIEBOX = "data_phoniebox"
 
 
 def discover_sensors(topic, payload, entry, coordinator):
@@ -89,10 +82,6 @@ def discover_sensors(topic, payload, entry, coordinator):
         unit = None
         return GenericPhonieboxSensor(entry, coordinator, domain, unit)
 
-    _LOGGER.info(
-        "-> Potential new sensor %(domain)s => %(payload)s",
-        {"domain": domain, "payload": payload},
-    )
 
 
 async def async_setup_entry(hass, entry, async_add_devices):
@@ -114,7 +103,7 @@ async def async_setup_entry(hass, entry, async_add_devices):
                 sensor.hass = hass
                 sensor.set_event(msg.payload)
                 store[sensor.name] = sensor
-                _LOGGER.debug("Registering sensor %(name)s", {"name": sensor.name})
+                LOGGER.debug("Registering sensor %(name)s", {"name": sensor.name})
                 async_add_devices((sensor,), True)
             else:
                 store[sensor.name].set_event(msg.payload)

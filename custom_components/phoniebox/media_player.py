@@ -1,5 +1,4 @@
 """BlueprintEntity class"""
-import logging
 from abc import ABC
 
 from homeassistant.components.media_player import MediaPlayerEntity
@@ -25,13 +24,11 @@ from .entity import PhonieboxEntity
 from .services import async_register_custom_services
 from .utils import bool_to_string, string_to_bool
 
-_LOGGER: logging.Logger = logging.getLogger(__package__)
-
 
 async def async_setup_entry(hass, entry, async_add_devices) -> None:
     """Setup media player platform."""
     coordinator = hass.data[DOMAIN][entry.entry_id]
-    async_add_devices([IntegrationBlueprintMediaPlayer(coordinator, entry, hass)])
+    async_add_devices([PhonieboxMediaPlayer(coordinator, entry, hass)])
     await async_register_custom_services()
 
 
@@ -39,7 +36,7 @@ def _slug(poniebox_name: str) -> str:
     return f"media_player.phoniebox_{slugify(poniebox_name)}"
 
 
-class IntegrationBlueprintMediaPlayer(PhonieboxEntity, MediaPlayerEntity, ABC):
+class PhonieboxMediaPlayer(PhonieboxEntity, MediaPlayerEntity, ABC):
     _attr_should_poll = False
     _attr_media_content_type = MEDIA_TYPE_MUSIC
     _attr_supported_features = SUPPORT_MQTTMEDIAPLAYER
@@ -116,7 +113,6 @@ class IntegrationBlueprintMediaPlayer(PhonieboxEntity, MediaPlayerEntity, ABC):
                 self._attr_state = STATE_IDLE
 
         if before_state != self._attr_state:
-            _LOGGER.info("Phoniebox Device State changed to %s (was %s)", self._attr_state, before_state)
             self.schedule_update_ha_state(True)
 
     async def async_added_to_hass(self) -> None:

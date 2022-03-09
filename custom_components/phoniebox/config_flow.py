@@ -6,8 +6,6 @@ from homeassistant import config_entries
 
 from .const import CONF_MQTT_BASE_TOPIC, CONF_PHONIEBOX_NAME, DOMAIN
 
-_LOGGER: logging.Logger = logging.getLogger(__package__)
-
 
 class BlueprintFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
     """Config flow for Blueprint."""
