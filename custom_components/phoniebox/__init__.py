@@ -14,7 +14,7 @@ from .data_coordinator import DataCoordinator
 from .mqtt_client import MqttClient
 
 
-async def async_setup():
+async def async_setup(hass: HomeAssistant, config: Config):
     """Set up this integration using YAML is not supported."""
     return True
 
