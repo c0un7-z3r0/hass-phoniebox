@@ -5,7 +5,9 @@ from homeassistant.components.binary_sensor import (
     BinarySensorDeviceClass,
     BinarySensorEntity,
 )
-from homeassistant.config_entries import ConfigEntries
+from homeassistant.config_entries import ConfigEntries, ConfigEntry
+from homeassistant.core import HomeAssistant
+from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.util import slugify
 
 from .data_coordinator import DataCoordinator
@@ -27,12 +29,16 @@ def discover_sensors(topic, entry, coordinator):
     return BinaryPhonieboxSensor(entry, domain, coordinator, None)
 
 
-async def async_setup_entry(hass, entry, async_add_devices):
+async def async_setup_entry(
+        hass: HomeAssistant,
+        config_entry: ConfigEntry,
+        async_add_devices: AddEntitiesCallback,
+) -> None:
     """Setup binary_sensor platform."""
-    coordinator: DataCoordinator = hass.data[DOMAIN][entry.entry_id]
+    coordinator: DataCoordinator = hass.data[DOMAIN][config_entry.entry_id]
 
     def received_msg(msg):
-        sensors = discover_sensors(msg.topic, entry, coordinator)
+        sensors = discover_sensors(msg.topic, config_entry, coordinator)
         store = coordinator.sensors
 
         if not sensors:
@@ -46,13 +52,10 @@ async def async_setup_entry(hass, entry, async_add_devices):
                 sensor.hass = hass
                 sensor.set_state(string_to_bool(msg.payload))
                 store[sensor.name] = sensor
-                LOGGER.debug(
-                    "Registering binary sensor %(name)s",
-                    {"name": sensor.name},
-                )
                 async_add_devices((sensor,), True)
             else:
                 store[sensor.name].set_state(string_to_bool(msg.payload))
+                store[sensor.name].async_schedule_update_ha_state()
 
     await coordinator.mqtt_client.async_subscribe("#", received_msg)
 
@@ -68,7 +71,7 @@ class BinaryPhonieboxSensor(PhonieboxEntity, BinarySensorEntity):
 
     def __init__(
             self,
-            config_entry: ConfigEntries,
+            config_entry: ConfigEntry,
             name: str,
             coordinator,
             device_class: BinarySensorDeviceClass = None,
@@ -81,4 +84,3 @@ class BinaryPhonieboxSensor(PhonieboxEntity, BinarySensorEntity):
     def set_state(self, value: bool) -> None:
         """Update the binary sensor with the most recent value."""
         self._attr_is_on = value
-        self.async_write_ha_state()

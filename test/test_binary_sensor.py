@@ -25,7 +25,7 @@ async def test_sensor_registry(
     )  # now added the sensor and for binary most-likely a switch as well
 
     entry: RegistryEntry = entity_registry.async_get(
-        "binary_sensor.phoniebox_test_box_gpio_2"
+        "binary_sensor.phoniebox_test_box_gpio"
     )
     assert entry
     assert entry.unique_id == "test_box-binary_sensor.phoniebox_test_box_gpio"
@@ -44,6 +44,6 @@ async def test_sensor_registry_update(
     async_fire_mqtt_message(hass, "test_phoniebox/attribute/gpio", "false")
     await hass.async_block_till_done()
 
-    version_sensor_state = hass.states.get("binary_sensor.phoniebox_test_box_gpio_2")
+    version_sensor_state = hass.states.get("binary_sensor.phoniebox_test_box_gpio")
     assert version_sensor_state is not None
     assert version_sensor_state.state == STATE_OFF

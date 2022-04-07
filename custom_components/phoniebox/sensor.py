@@ -83,7 +83,6 @@ def discover_sensors(topic, payload, entry, coordinator):
         return GenericPhonieboxSensor(entry, coordinator, domain, unit)
 
 
-
 async def async_setup_entry(hass, entry, async_add_devices):
     """Setup sensor platform."""
     coordinator = hass.data[DOMAIN][entry.entry_id]
@@ -107,6 +106,7 @@ async def async_setup_entry(hass, entry, async_add_devices):
                 async_add_devices((sensor,), True)
             else:
                 store[sensor.name].set_event(msg.payload)
+                store[sensor.name].async_schedule_update_ha_state()
 
     await coordinator.mqtt_client.async_subscribe("#", received_msg)
 
@@ -146,4 +146,3 @@ class GenericPhonieboxSensor(PhonieboxEntity, SensorEntity):
         if self.extract_value is not None:
             value = self.extract_value(event)
         self._attr_native_value = value
-        self.async_write_ha_state()

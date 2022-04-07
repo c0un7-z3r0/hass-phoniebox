@@ -25,12 +25,12 @@ async def test_sensor_registry(
     assert len(er_items_after) == len(er_items_before) + 1  # now added the sensor
 
     entry: RegistryEntry = entity_registry.async_get(
-        "sensor.phoniebox_test_box_version_2"
+        "sensor.phoniebox_test_box_version"
     )
     assert entry
     assert entry.unique_id == "test_box-sensor.phoniebox_test_box_version"
 
-    version_sensor_state = hass.states.get("sensor.phoniebox_test_box_version_2")
+    version_sensor_state = hass.states.get("sensor.phoniebox_test_box_version")
     assert version_sensor_state is not None
     assert version_sensor_state.state == MOCK_VERSION
 
@@ -53,11 +53,11 @@ async def test_sensor_registry_ignore_value(
     assert len(er_items_after) == len(er_items_before)  # now added the sensor
 
     entry: RegistryEntry = entity_registry.async_get(
-        "sensor.phoniebox_test_box_volume_2"
+        "sensor.phoniebox_test_box_volume"
     )
     assert entry is None
 
-    version_sensor_state = hass.states.get("sensor.phoniebox_test_box_volume_2")
+    version_sensor_state = hass.states.get("sensor.phoniebox_test_box_volume")
     assert version_sensor_state is None
 
 
@@ -70,7 +70,7 @@ async def test_sensor_registry_update(
     async_fire_mqtt_message(hass, "test_phoniebox/attribute/version", "2.3")
     await hass.async_block_till_done()
 
-    version_sensor_state = hass.states.get("sensor.phoniebox_test_box_version_2")
+    version_sensor_state = hass.states.get("sensor.phoniebox_test_box_version")
     assert version_sensor_state is not None
     assert version_sensor_state.state != MOCK_VERSION
     assert version_sensor_state.state == "2.3"
@@ -82,7 +82,7 @@ async def test_temperature_sensor(
     async_fire_mqtt_message(hass, "test_phoniebox/attribute/temperature", "55.2'C")
     await hass.async_block_till_done()
 
-    sensor_state = hass.states.get("sensor.phoniebox_test_box_temperature_2")
+    sensor_state = hass.states.get("sensor.phoniebox_test_box_temperature")
     assert sensor_state is not None
     assert sensor_state.state == "55.2"
     assert sensor_state.attributes.get("unit_of_measurement") == TEMP_CELSIUS
@@ -92,7 +92,7 @@ async def test_gb_sensor(hass, mqtt_client_mock, mqtt_mock, mock_phoniebox, conf
     async_fire_mqtt_message(hass, "test_phoniebox/attribute/disk_avail", "5")
     await hass.async_block_till_done()
 
-    sensor_state = hass.states.get("sensor.phoniebox_test_box_disk_avail_2")
+    sensor_state = hass.states.get("sensor.phoniebox_test_box_disk_avail")
     assert sensor_state is not None
     assert sensor_state.state == "5"
     assert sensor_state.attributes.get("unit_of_measurement") == DATA_GIGABYTES
@@ -104,7 +104,7 @@ async def test_player_state_sensor(
     async_fire_mqtt_message(hass, "test_phoniebox/attribute/state", "play")
     await hass.async_block_till_done()
 
-    sensor_state = hass.states.get("sensor.phoniebox_test_box_player_state_2")
+    sensor_state = hass.states.get("sensor.phoniebox_test_box_player_state")
     assert sensor_state is not None
     assert sensor_state.state == "play"
 
@@ -113,7 +113,7 @@ async def test_state_sensor(hass, mqtt_client_mock, mqtt_mock, mock_phoniebox, c
     async_fire_mqtt_message(hass, "test_phoniebox/state", "online")
     await hass.async_block_till_done()
 
-    sensor_state = hass.states.get("sensor.phoniebox_test_box_state_2")
+    sensor_state = hass.states.get("sensor.phoniebox_test_box_state")
     assert sensor_state is not None
     assert sensor_state.state == "online"
 
@@ -126,7 +126,7 @@ async def test_spotify_source_sensor(
     )
     await hass.async_block_till_done()
 
-    sensor_state = hass.states.get("sensor.phoniebox_test_box_source_2")
+    sensor_state = hass.states.get("sensor.phoniebox_test_box_source")
     assert sensor_state is not None
     assert sensor_state.state == "spotify"
 
@@ -139,6 +139,6 @@ async def test_file_source_sensor(
     )
     await hass.async_block_till_done()
 
-    sensor_state = hass.states.get("sensor.phoniebox_test_box_source_2")
+    sensor_state = hass.states.get("sensor.phoniebox_test_box_source")
     assert sensor_state is not None
     assert sensor_state.state == "file"

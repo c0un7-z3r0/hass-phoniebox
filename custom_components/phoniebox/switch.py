@@ -67,13 +67,10 @@ async def async_setup_entry(hass, entry, async_add_devices):
                 sensor.hass = hass
                 sensor.set_state(string_to_bool(msg.payload))
                 store[sensor.name] = sensor
-                LOGGER.debug(
-                    "Registering switch %(name)s",
-                    {"name": sensor.name},
-                )
                 async_add_devices((sensor,), True)
             else:
                 store[sensor.name].set_state(string_to_bool(msg.payload))
+                store[sensor.name].async_schedule_update_ha_state()
 
     await coordinator.mqtt_client.async_subscribe("#", received_msg)
 
@@ -110,7 +107,6 @@ class PhonieboxBinarySwitch(PhonieboxEntity, SwitchEntity, ABC):
     def set_state(self, value: bool) -> None:
         """Update the binary sensor with the most recent value."""
         self._attr_is_on = value
-        self.async_write_ha_state()
 
     async def async_turn_on(self, **kwargs: Any) -> None:
         """Turn the entity on."""
@@ -118,6 +114,7 @@ class PhonieboxBinarySwitch(PhonieboxEntity, SwitchEntity, ABC):
             f"cmd/{self._mqtt_topic}", self._mqtt_on_payload
         )
         self.set_state(True)
+        self.async_schedule_update_ha_state()
 
     async def async_turn_off(self, **kwargs: Any) -> None:
         """Turn the entity on."""
@@ -125,3 +122,4 @@ class PhonieboxBinarySwitch(PhonieboxEntity, SwitchEntity, ABC):
             f"cmd/{self._mqtt_topic}", self._mqtt_off_payload
         )
         self.set_state(False)
+        self.async_schedule_update_ha_state()

@@ -34,11 +34,11 @@ async def test_switch_registry(
         len(er_items_after) == len(er_items_before) + 2
     )  # now added the sensor and for binary most-likely a switch as well
 
-    entry: RegistryEntry = entity_registry.async_get("switch.phoniebox_test_box_gpio_2")
+    entry: RegistryEntry = entity_registry.async_get("switch.phoniebox_test_box_gpio")
     assert entry
     assert entry.unique_id == "test_box-switch.phoniebox_test_box_gpio"
 
-    switch_state = hass.states.get("switch.phoniebox_test_box_gpio_2")
+    switch_state = hass.states.get("switch.phoniebox_test_box_gpio")
     assert switch_state is not None
     assert switch_state.state == STATE_ON
 
@@ -52,7 +52,7 @@ async def test_switch_registry_update(
     async_fire_mqtt_message(hass, "test_phoniebox/attribute/gpio", "false")
     await hass.async_block_till_done()
 
-    switch_state = hass.states.get("switch.phoniebox_test_box_gpio_2")
+    switch_state = hass.states.get("switch.phoniebox_test_box_gpio")
     assert switch_state is not None
     assert switch_state.state == STATE_OFF
 
@@ -62,7 +62,7 @@ async def test_switch_off(hass, mqtt_client_mock, mqtt_mock, mock_phoniebox, con
     async_fire_mqtt_message(hass, "test_phoniebox/attribute/gpio", "true")
     await hass.async_block_till_done()
 
-    switch_state: State = hass.states.get("switch.phoniebox_test_box_gpio_2")
+    switch_state: State = hass.states.get("switch.phoniebox_test_box_gpio")
     assert switch_state is not None
     assert switch_state.state == STATE_ON
 
@@ -80,7 +80,7 @@ async def test_switch_on(hass, mqtt_client_mock, mqtt_mock, mock_phoniebox, conf
     async_fire_mqtt_message(hass, "test_phoniebox/attribute/gpio", "false")
     await hass.async_block_till_done()
 
-    switch_state: State = hass.states.get("switch.phoniebox_test_box_gpio_2")
+    switch_state: State = hass.states.get("switch.phoniebox_test_box_gpio")
     assert switch_state is not None
     assert switch_state.state == STATE_OFF
 
