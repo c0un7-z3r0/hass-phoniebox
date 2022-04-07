@@ -30,7 +30,7 @@ LOGGER: Logger = getLogger(__package__)
 NAME = "Phoniebox"
 DOMAIN = "phoniebox"
 DOMAIN_DATA = f"{DOMAIN}_data"
-VERSION = "0.3.1"
+VERSION = "0.3.2"
 ATTRIBUTION = ""
 ISSUE_URL = "https://github.com/c0un7-z3r0/hass-phoniebox/issues"
 
