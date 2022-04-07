@@ -2,7 +2,6 @@
     "config": {
         "step": {
             "user": {
-                "title": "Phoniebox",
                 "description": "If you need help with the configuration have a look here: https://github.com/c0un7-z3r0/hass-phoniebox",
                 "data": {
                     "phoniebox_name": "Name of your Phoniebox",
