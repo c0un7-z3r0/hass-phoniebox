@@ -9,7 +9,7 @@
 [![Validate](https://github.com/c0un7-z3r0/hass-phoniebox/actions/workflows/validate.yml/badge.svg)](https://github.com/c0un7-z3r0/hass-phoniebox/actions/workflows/validate.yml)
 
 
-_Component to integrate your [phoniebox][phoniebox-repo] with [home-assistant][ha-website]._
+_Component to integrate your [phoniebox][phoniebox-repo] with [Home Assistant][ha-website]._
 
 ![ha phoniebox mediaplayer](https://github.com/c0un7-z3r0/hass-phoniebox/blob/main/assets/media_player.png)
 
@@ -74,27 +74,16 @@ If When you experience issues/bugs with this the best way to report them is to o
 ***
 
 [hass-phoniebox]: https://github.com/c0un7-z3r0/hass-phoniebox
-
 [commits-shield]: https://img.shields.io/github/commit-activity/w/c0un7-z3r0/hass-phoniebox?style=for-the-badge
-
 [commits]: https://github.com/c0un7-z3r0/hass-phoniebox/commits/main
-
-[hacs]: https://github.com/custom-components/hacs
-
-[hacsbadge]: https://img.shields.io/badge/HACS-Custom-orange.svg?style=for-the-badge
-
+[hacs]: https://github.com/hacs/integration
+[hacsbadge]: https://img.shields.io/badge/HACS-Custom-41BDF5.svg?style=for-the-badge
 [ha-forum]: https://community.home-assistant.io/
-
 [ha-website]: https://www.home-assistant.io/
-
 [license-shield]: https://img.shields.io/github/license/c0un7-z3r0/hass-phoniebox?style=for-the-badge
-
 [maintenance-shield]: https://img.shields.io/badge/maintainer-%40c0un7--z3r0-blue.svg?style=for-the-badge
-
 [releases-shield]: https://img.shields.io/github/release/c0un7-z3r0/hass-phoniebox?style=for-the-badge
-
 [releases]: https://github.com/c0un7-z3r0/hass-phoniebox/releases
-
 [phoniebox-repo]: https://github.com/MiczFlor/RPi-Jukebox-RFID
 [phoniebox_mqtt_setup]: https://github.com/MiczFlor/RPi-Jukebox-RFID/tree/develop/components/smart-home-automation/MQTT-protocol#installation
 [ha_mqtt]: https://www.home-assistant.io/integrations/mqtt
