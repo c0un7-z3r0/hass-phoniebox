@@ -4,27 +4,29 @@ Custom integration to integrate Phoniebox with Home Assistant.
 For more details about this integration, please refer to
 https://github.com/c0un7-z3r0/hass-phoniebox
 """
+
 import asyncio
 
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.core import Config, HomeAssistant
+from homeassistant.core import Config, HomeAssistant, callback
 
 from .const import CONF_MQTT_BASE_TOPIC, DOMAIN, PLATFORMS
 from .data_coordinator import DataCoordinator
 from .mqtt_client import MqttClient
 
 
-async def async_setup(hass: HomeAssistant, config: Config):
+async def async_setup(_hass: HomeAssistant, _config: Config) -> bool:
     """Set up this integration using YAML is not supported."""
     return True
 
 
-async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
+@callback
+async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up this integration using UI."""
     if hass.data.get(DOMAIN) is None:
         hass.data.setdefault(DOMAIN, {})
 
-    base_topic = entry.data.get(CONF_MQTT_BASE_TOPIC)
+    base_topic = str(entry.data.get(CONF_MQTT_BASE_TOPIC))
     mqtt = MqttClient(hass, base_topic)
     coordinator = DataCoordinator(mqtt)
     hass.data[DOMAIN][entry.entry_id] = coordinator
@@ -32,7 +34,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     for platform in PLATFORMS:
         if entry.options.get(platform, True):
             coordinator.platforms.append(platform)
-            hass.async_add_job(
+            await hass.async_create_task(
                 hass.config_entries.async_forward_entry_setup(entry, platform)
             )
 

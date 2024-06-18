@@ -1,84 +1,81 @@
-name-template: 'v$RESOLVED_VERSION'
-tag-template: 'v$RESOLVED_VERSION'
-change-template: '- #$NUMBER $TITLE @$AUTHOR'
+name-template: "v$RESOLVED_VERSION"
+tag-template: "v$RESOLVED_VERSION"
+change-template: "- #$NUMBER $TITLE @$AUTHOR"
 sort-direction: ascending
 categories:
-  - title: ':boom: Breaking changes'
-    label: 'pr: breaking'
+  - title: ":boom: Breaking changes"
+    label: "pr: breaking"
 
-  - title: ':sparkles: Features'
-    label: 'pr: feat'
+  - title: ":sparkles: Features"
+    label: "pr: feat"
 
-  - title: ':recycle: Refactor'
-    label: 'pr: refactor'
+  - title: ":recycle: Refactor"
+    label: "pr: refactor"
 
-  - title: ':bug: Bug Fixes'
-    label: 'pr: fix'
+  - title: ":bug: Bug Fixes"
+    label: "pr: fix"
 
-  - title: ':zap: Performance Improvements'
-    labels: 'pr: perf'
-
+  - title: ":zap: Performance Improvements"
+    labels: "pr: perf"
 
 autolabeler:
-  - label: 'pr: breaking'
+  - label: "pr: breaking"
     body:
-      - '/BREAKING CHANGE/'
-  - label: 'pr: test'
+      - "/BREAKING CHANGE/"
+  - label: "pr: test"
     branch:
       - 'test\/.+/'
-  - label: 'pr: style'
+  - label: "pr: style"
     branch:
       - 'style\/.+/'
-  - label: 'pr: refactor'
+  - label: "pr: refactor"
     branch:
       - '/refactor\/.+/'
-  - label: 'pr: perf'
+  - label: "pr: perf"
     branch:
       - '/perf\/.+/'
-  - label: 'pr: fix'
+  - label: "pr: fix"
     branch:
       - '/fix\/.+/'
-  - label: 'pr: ci'
+  - label: "pr: ci"
     branch:
       - '/ci\/.+/'
-  - label: 'pr: build'
+  - label: "pr: build"
     branch:
       - '/build\/.+/'
-  - label: 'pr: docs'
+  - label: "pr: docs"
     files:
-      - '*.md'
+      - "*.md"
     branch:
       - '/docs{0,1}\/.+/'
-  - label: 'pr: feat'
+  - label: "pr: feat"
     branch:
       - '/feature\/.+/'
 
-
-
 include-labels:
-  - 'pr: breaking'
-  - 'pr: fix'
-  - 'pr: feat'
-  - 'pr: perf'
-  - 'pr: refactor'
+  - "pr: breaking"
+  - "pr: fix"
+  - "pr: feat"
+  - "pr: perf"
+  - "pr: refactor"
 
 version-resolver:
   major:
     labels:
-      - 'pr: breaking'
+      - "pr: breaking"
   minor:
     labels:
-      - 'pr: feat'
-      - 'pr: perf'
-      - 'pr: refactor'
+      - "pr: feat"
+      - "pr: perf"
+      - "pr: refactor"
   patch:
     labels:
-      - 'pr: fix'
+      - "pr: fix"
   default: minor
 
 template: |
   [![Downloads for this release](https://img.shields.io/github/downloads/c0un7-z3r0/hass-phoniebox/v$RESOLVED_VERSION/total.svg)](https://github.com/c0un7-z3r0/hass-phoniebox/releases/v$RESOLVED_VERSION)
   $CHANGES
-  
+
   ## Links
     - [How to submit bugs/feature requests](https://github.com/c0un7-z3r0/hass-phoniebox/issues)

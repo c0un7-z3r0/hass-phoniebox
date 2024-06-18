@@ -1,7 +1,16 @@
 """Sensor platform for phoniebox."""
 
+# pylint: disable=duplicate-code
+from collections.abc import Callable
+from dataclasses import dataclass
+from typing import Any
+
+from homeassistant.components.mqtt.models import ReceiveMessage
 from homeassistant.components.sensor import SensorDeviceClass, SensorEntity
-from homeassistant.const import DATA_GIGABYTES, TEMP_CELSIUS
+from homeassistant.config_entries import ConfigEntry
+from homeassistant.const import UnitOfInformation, UnitOfTemperature
+from homeassistant.core import HomeAssistant, callback
+from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.util import slugify
 
 from .const import (
@@ -10,100 +19,194 @@ from .const import (
     DOMAIN,
     GIGABYTE_SENSORS,
     IGNORE_SENSORS,
-    STRING_SENSORS, LOGGER,
+    LOGGER,
+    STRING_SENSORS,
+    TOPIC_DOMAIN_FILE,
+    TOPIC_DOMAIN_STATE,
+    TOPIC_DOMAIN_TEMPERATUR,
+    TOPIC_DOMAIN_VERSION,
+    TOPIC_LENGTH_GENERIC_STATE,
+    TOPIC_LENGTH_PLAYER_STATE,
 )
+from .data_coordinator import DataCoordinator
 from .entity import PhonieboxEntity
 
 
-def discover_sensors(topic, payload, entry, coordinator):
-    """Given a topic, dynamically create the right sensor type.
+@dataclass
+class SensorData:
+    """Button Data."""
+
+    name: str
+    units: UnitOfInformation | UnitOfTemperature | None
+    icon: str | None = None
+    device_class: SensorDeviceClass | None = None
+    extract_value: Callable[[Any], float | str] | None = None
+
+
+class GenericPhonieboxSensor(PhonieboxEntity, SensorEntity):
+    """Generic blueprint for a phoniebox sensor."""
+
+    _attr_should_poll = False
+
+    def __init__(
+        self,
+        config_entry: ConfigEntry,
+        coordinator: DataCoordinator,
+        data: SensorData,
+    ) -> None:
+        """Initialize the sensor."""
+        super().__init__(config_entry, coordinator)
+        self.entity_id = _slug(data.name, config_entry.data[CONF_PHONIEBOX_NAME])
+        self._attr_name = data.name
+        # This mqtt topic for the sensor which is its uid
+        self._attr_native_unit_of_measurement = data.units
+        self._attr_icon = data.icon
+        self._attr_device_class = data.device_class
+        self.extract_value = data.extract_value
+
+    def set_state(self, *, value: bool) -> None:  # noqa: ARG002 # pylint: disable=unused-argument
+        """Update the sensor with the most recent event."""
+        return
+
+    def set_event(self, event: Any) -> None:
+        """Update the sensor with the most recent event."""
+        value = event
+        if self.extract_value is not None:
+            value = self.extract_value(event)
+        if self._attr_native_value == value:
+            return
+
+        LOGGER.debug(
+            "Updating sensor %(name)s to -> %(value)s",
+            {"name": self.name, "value": value},
+        )
+        self._attr_native_value = value
+
+
+def is_player_state(domain: str, parts: list[str]) -> bool:
+    """WIll check if received topic is player state update."""
+    return domain == TOPIC_DOMAIN_STATE and len(parts) == TOPIC_LENGTH_PLAYER_STATE
+
+
+def is_generic_state(domain: str, parts: list[str]) -> bool:
+    """WIll check if received topic is a normal state update."""
+    return domain == TOPIC_DOMAIN_STATE and len(parts) == TOPIC_LENGTH_GENERIC_STATE
+
+
+def discover_sensors(  # noqa: PLR0911 # pylint: disable=too-many-return-statements
+    topic: str,
+    payload: Any,
+    entry: Any,
+    coordinator: Any,
+) -> GenericPhonieboxSensor | None:
+    """
+    Given a topic, dynamically create the right sensor type.
+
     Async friendly.
     """
     parts = topic.split("/")
-    domain = parts[2] if len(parts) == 3 else parts[1]
+    domain = parts[2] if len(parts) == TOPIC_LENGTH_PLAYER_STATE else parts[1]
+
     if domain in IGNORE_SENSORS or domain in BOOLEAN_SENSORS:
-        return
+        return None
 
-    if domain == "temperature":
-        unit = TEMP_CELSIUS
+    if domain == TOPIC_DOMAIN_TEMPERATUR:
 
-        def temp_string_to_float(temp_str):
+        def temp_string_to_float(temp_str: str) -> float:
             return float(temp_str.split("'")[0])
 
         return GenericPhonieboxSensor(
-            entry,
-            coordinator,
-            domain,
-            unit,
-            device_class=SensorDeviceClass.TEMPERATURE,
-            extract_value=temp_string_to_float,
+            config_entry=entry,
+            coordinator=coordinator,
+            data=SensorData(
+                name=domain,
+                units=UnitOfTemperature.CELSIUS,
+                device_class=SensorDeviceClass.TEMPERATURE,
+                extract_value=temp_string_to_float,
+            ),
         )
 
     if domain in GIGABYTE_SENSORS:
-        unit = DATA_GIGABYTES
         return GenericPhonieboxSensor(
-            entry,
-            coordinator,
-            domain,
-            unit,
+            config_entry=entry,
+            coordinator=coordinator,
+            data=SensorData(
+                name=domain,
+                units=UnitOfInformation.GIGABYTES,
+            ),
         )
 
-    if domain == "state" and len(parts) == 2:
-        unit = None
+    if is_generic_state(domain, parts):
         return GenericPhonieboxSensor(
-            entry,
-            coordinator,
-            "state",
-            unit,
+            config_entry=entry,
+            coordinator=coordinator,
+            data=SensorData(
+                name="state",
+                units=None,
+            ),
         )
-    if domain == "state" and len(parts) == 3:
-        unit = None
+    if is_player_state(domain, parts):
         return GenericPhonieboxSensor(
-            entry,
-            coordinator,
-            "player state",
-            unit,
+            config_entry=entry,
+            coordinator=coordinator,
+            data=SensorData(
+                name="player state",
+                units=None,
+            ),
         )
 
-    if domain == "file":
-        unit = None
+    if domain == TOPIC_DOMAIN_FILE:
 
-        def find_source(file):
+        def find_source(file: str) -> str:
             return file.split(":")[0]
 
         return GenericPhonieboxSensor(
-            entry, coordinator, "source", unit, extract_value=find_source
+            config_entry=entry,
+            coordinator=coordinator,
+            data=SensorData(name="source", units=None, extract_value=find_source),
         )
 
-    if domain == "version":
+    if domain == TOPIC_DOMAIN_VERSION:
         coordinator.version = payload
 
     if domain in STRING_SENSORS:
-        unit = None
-        return GenericPhonieboxSensor(entry, coordinator, domain, unit)
+        return GenericPhonieboxSensor(
+            config_entry=entry,
+            coordinator=coordinator,
+            data=SensorData(name=domain, units=None),
+        )
+
+    return None
 
 
-async def async_setup_entry(hass, entry, async_add_devices):
-    """Setup sensor platform."""
-    coordinator = hass.data[DOMAIN][entry.entry_id]
+async def async_setup_entry(
+    hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback
+) -> None:
+    """Set the sensor platform up."""
+    coordinator: DataCoordinator = hass.data[DOMAIN][entry.entry_id]
 
-    def received_msg(msg):
+    @callback
+    def received_msg(msg: ReceiveMessage) -> None:
         sensors = discover_sensors(msg.topic, msg.payload, entry, coordinator)
         store = coordinator.sensors
 
         if not sensors:
             return
 
-        if isinstance(sensors, GenericPhonieboxSensor):
-            sensors = (sensors,)
+        sensor_list = (
+            (sensors,) if isinstance(sensors, GenericPhonieboxSensor) else sensors
+        )
 
-        for sensor in sensors:
+        for sensor in sensor_list:
+            if not isinstance(sensor.name, str):
+                continue
+
             if sensor.name not in store:
                 sensor.hass = hass
                 sensor.set_event(msg.payload)
                 store[sensor.name] = sensor
                 LOGGER.debug("Registering sensor %(name)s", {"name": sensor.name})
-                async_add_devices((sensor,), True)
+                async_add_entities(new_entities=(sensor,), update_before_add=True)
             else:
                 store[sensor.name].set_event(msg.payload)
                 store[sensor.name].async_schedule_update_ha_state()
@@ -111,38 +214,5 @@ async def async_setup_entry(hass, entry, async_add_devices):
     await coordinator.mqtt_client.async_subscribe("#", received_msg)
 
 
-def _slug(name, poniebox_name):
-    return f"sensor.phoniebox_{poniebox_name}_{slugify(name)}"
-
-
-class GenericPhonieboxSensor(PhonieboxEntity, SensorEntity):
-    """Generic blueprint for a phoniebox sensor"""
-
-    _attr_should_poll = False
-
-    def __init__(
-        self,
-        config_entry,
-        coordinator,
-        name,
-        units,
-        icon=None,
-        device_class=None,
-        extract_value=None,
-    ):
-        super().__init__(config_entry, coordinator)
-        """Initialize the sensor."""
-        self.entity_id = _slug(name, config_entry.data[CONF_PHONIEBOX_NAME])
-        self._attr_name = name
-        # This mqtt topic for the sensor which is its uid
-        self._attr_native_unit_of_measurement = units
-        self._attr_icon = icon
-        self._attr_device_class = device_class
-        self.extract_value = extract_value
-
-    def set_event(self, event):
-        """Update the sensor with the most recent event."""
-        value = event
-        if self.extract_value is not None:
-            value = self.extract_value(event)
-        self._attr_native_value = value
+def _slug(name: str, phoniebox_name: str) -> str:
+    return f"sensor.phoniebox_{phoniebox_name}_{slugify(name)}"

@@ -1,10 +1,13 @@
 """Switch platform for phoniebox."""
+
 from __future__ import annotations
 
 from abc import ABC
-from typing import Any
+from dataclasses import dataclass
+from typing import TYPE_CHECKING, Any
 
 from homeassistant.components.switch import SwitchEntity
+from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.entity import EntityCategory
 from homeassistant.util import slugify
 
@@ -12,114 +15,150 @@ from .const import (
     BINARY_SWITCHES,
     CONF_PHONIEBOX_NAME,
     DOMAIN,
-    NAME,
+    LOGGER,
+    PHONIEBOX_ATTR_GPIO,
+    PHONIEBOX_ATTR_RFID,
     PHONIEBOX_START,
     PHONIEBOX_STOP,
-    VERSION, LOGGER,
+    TOPIC_DOMAIN_RANDOM,
+    TOPIC_LENGTH_PLAYER_STATE,
 )
 from .entity import PhonieboxEntity
 from .utils import string_to_bool
 
+if TYPE_CHECKING:
+    from homeassistant.components.mqtt.models import ReceiveMessage
+    from homeassistant.config_entries import ConfigEntry
+    from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-def discover_sensors(topic, entry, coordinator) -> PhonieboxBinarySwitch | None:
-    """
-    Based on the topic and entry create the correct binary switch
-    """
+    from .data_coordinator import DataCoordinator
+
+
+def discover_sensors(
+    topic: str, entry: ConfigEntry, coordinator: DataCoordinator
+) -> PhonieboxBinarySwitch | None:
+    """Based on the topic and entry create the correct binary switch."""
     parts = topic.split("/")
-    domain = parts[2] if len(parts) == 3 else parts[1]
+    domain = parts[2] if len(parts) == TOPIC_LENGTH_PLAYER_STATE else parts[1]
 
     if domain not in BINARY_SWITCHES:
-        return
+        return None
 
-    if domain in ["gpio", "rfid"]:
+    if domain in [PHONIEBOX_ATTR_GPIO, PHONIEBOX_ATTR_RFID]:
         return PhonieboxBinarySwitch(
-            entry,
-            coordinator,
-            domain,
-            domain,
-            PHONIEBOX_START,
-            PHONIEBOX_STOP,
-            EntityCategory.CONFIG,
+            config_entry=entry,
+            coordinator=coordinator,
+            data=SwitchData(
+                name=domain,
+                mqtt_topic=domain,
+                mqtt_on_payload=PHONIEBOX_START,
+                mqtt_off_payload=PHONIEBOX_STOP,
+                entity_category=EntityCategory.CONFIG,
+            ),
         )
 
-    if domain == "random":
-        return PhonieboxBinarySwitch(entry, coordinator, domain, "playershuffle")
+    if domain == TOPIC_DOMAIN_RANDOM:
+        return PhonieboxBinarySwitch(
+            config_entry=entry,
+            coordinator=coordinator,
+            data=SwitchData(name=domain, mqtt_topic="playershuffle"),
+        )
 
-    return PhonieboxBinarySwitch(entry, coordinator, domain, domain)
+    return PhonieboxBinarySwitch(
+        config_entry=entry,
+        coordinator=coordinator,
+        data=SwitchData(name=domain, mqtt_topic=domain),
+    )
 
 
-async def async_setup_entry(hass, entry, async_add_devices):
-    """Setup binary_sensor platform."""
+async def async_setup_entry(
+    hass: HomeAssistant, entry: ConfigEntry, async_add_devices: AddEntitiesCallback
+) -> None:
+    """Set binary_sensor platform up."""
     coordinator = hass.data[DOMAIN][entry.entry_id]
 
-    def received_msg(msg):
+    @callback
+    def received_msg(msg: ReceiveMessage) -> None:
         sensors = discover_sensors(msg.topic, entry, coordinator)
         store = coordinator.switches
 
         if not sensors:
             return
 
-        if isinstance(sensors, PhonieboxBinarySwitch):
-            sensors = (sensors,)
+        sensors_tuple = (
+            (sensors,) if isinstance(sensors, PhonieboxBinarySwitch) else sensors
+        )
 
-        for sensor in sensors:
+        for sensor in sensors_tuple:
             if sensor.name not in store:
                 sensor.hass = hass
-                sensor.set_state(string_to_bool(msg.payload))
+                sensor.set_state(value=string_to_bool(str(msg.payload)))
                 store[sensor.name] = sensor
-                async_add_devices((sensor,), True)
+                async_add_devices(new_entities=(sensor,), update_before_add=True)
             else:
-                store[sensor.name].set_state(string_to_bool(msg.payload))
+                store[sensor.name].set_state(value=string_to_bool(str(msg.payload)))
                 store[sensor.name].async_schedule_update_ha_state()
 
     await coordinator.mqtt_client.async_subscribe("#", received_msg)
 
 
-def _slug(name, poniebox_name):
-    return f"switch.phoniebox_{poniebox_name}_{slugify(name)}"
+def _slug(name: str, phoniebox_name: str) -> str:
+    return f"switch.phoniebox_{phoniebox_name}_{slugify(name)}"
+
+
+@dataclass
+class SwitchData:
+    """Button Data."""
+
+    name: str
+    mqtt_topic: str | None = None
+    mqtt_on_payload: str = ""
+    mqtt_off_payload: str = ""
+    entity_category: EntityCategory | None = None
 
 
 class PhonieboxBinarySwitch(PhonieboxEntity, SwitchEntity, ABC):
     """phoniebox switch class."""
 
+    # pylint: disable=too-many-instance-attributes
+
     _attr_should_poll = False
 
     def __init__(
-            self,
-            config_entry,
-            coordinator,
-            name,
-            mqtt_topic=None,
-            mqtt_on_payload="",
-            mqtt_off_payload="",
-            entity_category=None,
-    ):
-        super().__init__(config_entry, coordinator)
+        self, config_entry: ConfigEntry, coordinator: DataCoordinator, data: SwitchData
+    ) -> None:
         """Initialize the sensor."""
-        self.entity_id = _slug(name, config_entry.data[CONF_PHONIEBOX_NAME])
-        self._attr_name = name
-        self._name = "switch_" + name
-        self._mqtt_on_payload = mqtt_on_payload
-        self._mqtt_off_payload = mqtt_off_payload
-        self._mqtt_topic = mqtt_topic
-        self._attr_entity_category = entity_category
+        super().__init__(config_entry, coordinator)
+        self.entity_id = _slug(data.name, config_entry.data[CONF_PHONIEBOX_NAME])
+        self._attr_name = data.name
+        self._name = "switch_" + data.name
+        self._mqtt_on_payload = data.mqtt_on_payload
+        self._mqtt_off_payload = data.mqtt_off_payload
+        self._mqtt_topic = data.mqtt_topic
+        self._attr_entity_category = data.entity_category
 
-    def set_state(self, value: bool) -> None:
+    def set_state(self, *, value: bool) -> None:
         """Update the binary sensor with the most recent value."""
+        if self._attr_is_on == value:
+            return
+        LOGGER.debug(
+            "Updating switch %(name)s to -> %(value)s",
+            {"name": self.name, "value": value},
+        )
         self._attr_is_on = value
 
-    async def async_turn_on(self, **kwargs: Any) -> None:
+    async def async_turn_on(self, **kwargs: Any) -> None:  # noqa: ARG002
         """Turn the entity on."""
         await self.mqtt_client.async_publish(
             f"cmd/{self._mqtt_topic}", self._mqtt_on_payload
         )
-        self.set_state(True)
+        self.set_state(value=True)
         self.async_schedule_update_ha_state()
 
-    async def async_turn_off(self, **kwargs: Any) -> None:
+    async def async_turn_off(self, **kwargs: Any) -> None:  # noqa: ARG002
         """Turn the entity on."""
         await self.mqtt_client.async_publish(
             f"cmd/{self._mqtt_topic}", self._mqtt_off_payload
         )
-        self.set_state(False)
+        self.set_state(value=False)
         self.async_schedule_update_ha_state()

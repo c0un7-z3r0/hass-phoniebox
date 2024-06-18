@@ -1,20 +1,32 @@
 """Tests for the Phoniebox Binary Sensors."""
+
+from typing import TYPE_CHECKING
+
 from homeassistant.const import STATE_OFF, STATE_ON
+from homeassistant.core import HomeAssistant
 from homeassistant.helpers import entity_registry as er
-from homeassistant.helpers.entity_registry import RegistryEntry
-from pytest_homeassistant_custom_component.common import async_fire_mqtt_message
+from pytest_homeassistant_custom_component.common import (
+    MockConfigEntry,
+    async_fire_mqtt_message,
+)
+
+if TYPE_CHECKING:
+    from homeassistant.helpers.entity_registry import RegistryEntry
 
 
 async def test_sensor_registry(
-    hass, mqtt_client_mock, mqtt_mock, mock_phoniebox, config
-):
-    """Test that a new sensor is created"""
+    hass: HomeAssistant,
+    mock_phoniebox: MockConfigEntry,
+    config: dict,
+) -> None:
+    """Test that a new sensor is created."""
     entity_registry = er.async_get(hass)
     er_items_before = er.async_entries_for_config_entry(
         entity_registry, mock_phoniebox.entry_id
     )
 
     async_fire_mqtt_message(hass, "test_phoniebox/attribute/gpio", "true")
+
     await hass.async_block_till_done()
 
     er_items_after = er.async_entries_for_config_entry(
@@ -36,9 +48,9 @@ async def test_sensor_registry(
 
 
 async def test_sensor_registry_update(
-    hass, mqtt_client_mock, mqtt_mock, mock_phoniebox, config
-):
-    """Test that the sensor is updating properly on new value"""
+    hass: HomeAssistant, mock_phoniebox: MockConfigEntry, config: dict
+) -> None:
+    """Test that the sensor is updating properly on new value."""
     async_fire_mqtt_message(hass, "test_phoniebox/attribute/gpio", "true")
     await hass.async_block_till_done()
     async_fire_mqtt_message(hass, "test_phoniebox/attribute/gpio", "false")

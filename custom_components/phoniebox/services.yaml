@@ -1,3 +1,4 @@
+---
 set_volume_steps:
   name: Set Volume Steps
   description: Set the Volume Change % in your Phoniebox
@@ -44,7 +45,9 @@ set_idle_shutdown_timer:
   fields:
     time:
       name: Idle Time
-      description: Time that phoniebox is idle till shutdown. 0 to turn idle timer off.
+      description: >
+        Time that phoniebox is idle till
+        shutdown. 0 to turn idle timer off.
       required: true
       selector:
         number:
@@ -98,7 +101,7 @@ set_rfid:
   fields:
     is_started:
       name: RFID reader active
-      description: True/false for active/deactive
+      description: True/false for active/deactivate
       required: true
       selector:
         boolean:
@@ -113,14 +116,14 @@ set_gpio:
   fields:
     is_started:
       name: GPIO buttons active
-      description: True/false for active/deactive
+      description: True/false for active/deactivate
       required: true
       selector:
         boolean:
 
 swipe_card:
   name: Swipe a card
-  description: Trigger a card action by swipping a card
+  description: Trigger a card action by swiping a card
   target:
     entity:
       integration: phoniebox
