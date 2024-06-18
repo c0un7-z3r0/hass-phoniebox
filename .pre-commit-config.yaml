@@ -1,0 +1,51 @@
+---
+repos:
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.4.8
+    hooks:
+      - id: ruff
+        args:
+          - --fix
+      - id: ruff-format
+        files: ^((custom_components|pylint|script|tests)/.+)?[^/]+\.(py|pyi)$
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.4.0
+    hooks:
+      - id: check-executables-have-shebangs
+        stages: [ manual ]
+      - id: check-json
+        exclude: (.vscode|.devcontainer)
+      - id: no-commit-to-branch
+        args:
+          - --branch=dev
+          - --branch=master
+          - --branch=rc
+  - repo: https://github.com/cdce8p/python-typing-update
+    rev: v0.6.0
+    hooks:
+      # Run `python-typing-update` hook manually from time to time
+      # to update python typing syntax.
+      # Will require manual work, before submitting changes!
+      # pre-commit run --hook-stage manual python-typing-update --all-files
+      - id: python-typing-update
+        stages: [ manual ]
+        args:
+          - --py311-plus
+          - --force
+          - --keep-updates
+        files: ^(custom_components|tests|script)/.+\.py$
+  - repo: local
+    hooks:
+      - id: mypy
+        name: mypy
+        entry: scripts/run-in-env.sh mypy
+        language: script
+        types_or: [ python, pyi ]
+        require_serial: true
+        files: ^(custom_components|pylint)/.+\.(py|pyi)$
+      - id: pylint
+        name: pylint
+        entry: scripts/run-in-env.sh pylint -j 0
+        language: script
+        types_or: [ python, pyi ]
+        files: ^custom_components/.+\.(py|pyi)$

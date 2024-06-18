@@ -1,0 +1,52 @@
+{
+  "name": "Phoniebox",
+  "image": "mcr.microsoft.com/devcontainers/python:3.12",
+  "postCreateCommand": "scripts/setup",
+  "forwardPorts": [
+    8123
+  ],
+  "portsAttributes": {
+    "8123": {
+      "label": "Home Assistant"
+    }
+  },
+  "customizations": {
+    "extensions": [
+      "charliermarsh.ruff",
+      "ms-python.python",
+      "github.vscode-pull-request-github",
+      "ryanluker.vscode-coverage-gutters",
+      "ms-python.vscode-pylance"
+    ],
+    "vscode": {
+      "settings": {
+        "python.pythonPath": "/usr/local/bin/python3.12",
+        "python.defaultInterpreterPath": "/usr/local/bin/python3.12",
+        "python.formatting.provider": "ruff",
+        "editor.formatOnPaste": false,
+        "editor.formatOnSave": true,
+        "editor.formatOnType": true,
+        "editor.defaultFormatter": "charliermarsh.ruff",
+        "editor.rulers": [
+          100
+        ],
+        "editor.codeActionsOnSave": {
+          "source.fixAll": "always",
+          "source.organizeImports": "always"
+        },
+        "files.trimTrailingWhitespace": true
+      },
+      "extensions": [
+        "github.vscode-pull-request-github",
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "ms-vscode.makefile-tools",
+        "ryanluker.vscode-coverage-gutters",
+        "charliermarsh.ruff",
+        "ms-python.debugpy"
+      ]
+    }
+  },
+  "remoteUser": "vscode",
+  "features": {}
+}
