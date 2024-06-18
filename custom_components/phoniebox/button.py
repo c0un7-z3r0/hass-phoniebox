@@ -45,7 +45,7 @@ def find_device_class(name: str) -> ButtonDeviceClass | None:
 
 def find_mqtt_topic(name: str) -> str | None:
     """Based on the button name find the corresponding mqtt command."""
-    return getattr(NAME_TO_MQTT_COMMAND, name, None)
+    return NAME_TO_MQTT_COMMAND.get(name) or None
 
 
 async def async_setup_entry(

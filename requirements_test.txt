@@ -1,3 +1,4 @@
 pytest-homeassistant-custom-component
 paho-mqtt
 aiohttp_cors
+pytest-cov

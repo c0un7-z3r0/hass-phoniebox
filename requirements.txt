@@ -11,3 +11,4 @@ mypy
 pylint
 pytest~=8.2.0
 voluptuous~=0.13.1
+pytest-cov

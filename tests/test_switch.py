@@ -17,8 +17,6 @@ from pytest_homeassistant_custom_component.common import (
     async_fire_mqtt_message,
 )
 
-from tests.typing import MqttMockHAClient
-
 if TYPE_CHECKING:
     from homeassistant.helpers.entity_registry import RegistryEntry
 
@@ -71,7 +69,7 @@ async def test_switch_registry_update(
 
 async def test_switch_off(
     hass: HomeAssistant,
-    mqtt_mock: MqttMockHAClient,
+    mqtt_mock: MagicMock,
     mock_phoniebox: MockConfigEntry,
     config: dict,
 ) -> None:

@@ -1,5 +1,7 @@
 """Tests for the Phoniebox Media Player."""
 
+from unittest.mock import MagicMock
+
 from homeassistant.components.media_player import (
     MediaPlayerState,
 )
@@ -50,7 +52,6 @@ from custom_components.phoniebox.const import (
     PHONIEBOX_REPEAT_SINGLE,
     SUPPORT_MQTTMEDIAPLAYER,
 )
-from tests.typing import MqttMockHAClient
 
 
 async def test_device_registry(
@@ -191,7 +192,7 @@ async def test_online_device_state_change_to_online(
 
 async def test_cmd_volume_up(
     hass: HomeAssistant,
-    mqtt_mock: MqttMockHAClient,
+    mqtt_mock: MagicMock,
     mock_phoniebox: MockConfigEntry,
     config: dict,
     media_player_entry: RegistryEntry,
@@ -208,7 +209,7 @@ async def test_cmd_volume_up(
 
 async def test_cmd_volume_down(
     hass: HomeAssistant,
-    mqtt_mock: MqttMockHAClient,
+    mqtt_mock: MagicMock,
     mock_phoniebox: MockConfigEntry,
     config: dict,
     media_player_entry: RegistryEntry,
@@ -225,7 +226,7 @@ async def test_cmd_volume_down(
 
 async def test_cmd_mute(
     hass: HomeAssistant,
-    mqtt_mock: MqttMockHAClient,
+    mqtt_mock: MagicMock,
     mock_phoniebox: MockConfigEntry,
     config: dict,
     media_player_entry: RegistryEntry,
@@ -242,7 +243,7 @@ async def test_cmd_mute(
 
 async def test_cmd_unmute(
     hass: HomeAssistant,
-    mqtt_mock: MqttMockHAClient,
+    mqtt_mock: MagicMock,
     mock_phoniebox: MockConfigEntry,
     config: dict,
     media_player_entry: RegistryEntry,
@@ -262,7 +263,7 @@ async def test_cmd_unmute(
 
 async def test_cmd_play(
     hass: HomeAssistant,
-    mqtt_mock: MqttMockHAClient,
+    mqtt_mock: MagicMock,
     mock_phoniebox: MockConfigEntry,
     config: dict,
     media_player_entry: RegistryEntry,
@@ -279,7 +280,7 @@ async def test_cmd_play(
 
 async def test_cmd_pause(
     hass: HomeAssistant,
-    mqtt_mock: MqttMockHAClient,
+    mqtt_mock: MagicMock,
     mock_phoniebox: MockConfigEntry,
     config: dict,
     media_player_entry: RegistryEntry,
@@ -296,7 +297,7 @@ async def test_cmd_pause(
 
 async def test_cmd_stop(
     hass: HomeAssistant,
-    mqtt_mock: MqttMockHAClient,
+    mqtt_mock: MagicMock,
     mock_phoniebox: MockConfigEntry,
     config: dict,
     media_player_entry: RegistryEntry,
@@ -313,7 +314,7 @@ async def test_cmd_stop(
 
 async def test_cmd_play_prev(
     hass: HomeAssistant,
-    mqtt_mock: MqttMockHAClient,
+    mqtt_mock: MagicMock,
     mock_phoniebox: MockConfigEntry,
     config: dict,
     media_player_entry: RegistryEntry,
@@ -330,7 +331,7 @@ async def test_cmd_play_prev(
 
 async def test_cmd_play_next(
     hass: HomeAssistant,
-    mqtt_mock: MqttMockHAClient,
+    mqtt_mock: MagicMock,
     mock_phoniebox: MockConfigEntry,
     config: dict,
     media_player_entry: RegistryEntry,
@@ -347,7 +348,7 @@ async def test_cmd_play_next(
 
 async def test_cmd_seek(
     hass: HomeAssistant,
-    mqtt_mock: MqttMockHAClient,
+    mqtt_mock: MagicMock,
     mock_phoniebox: MockConfigEntry,
     config: dict,
     media_player_entry: RegistryEntry,
@@ -367,7 +368,7 @@ async def test_cmd_seek(
 
 async def test_cmd_shuffle_true(
     hass: HomeAssistant,
-    mqtt_mock: MqttMockHAClient,
+    mqtt_mock: MagicMock,
     mock_phoniebox: MockConfigEntry,
     config: dict,
     media_player_entry: RegistryEntry,
@@ -384,7 +385,7 @@ async def test_cmd_shuffle_true(
 
 async def test_cmd_shuffle_false(
     hass: HomeAssistant,
-    mqtt_mock: MqttMockHAClient,
+    mqtt_mock: MagicMock,
     mock_phoniebox: MockConfigEntry,
     config: dict,
     media_player_entry: RegistryEntry,
@@ -401,7 +402,7 @@ async def test_cmd_shuffle_false(
 
 async def test_cmd_repeat_all(
     hass: HomeAssistant,
-    mqtt_mock: MqttMockHAClient,
+    mqtt_mock: MagicMock,
     mock_phoniebox: MockConfigEntry,
     config: dict,
     media_player_entry: RegistryEntry,
@@ -421,7 +422,7 @@ async def test_cmd_repeat_all(
 
 async def test_cmd_repeat_single(
     hass: HomeAssistant,
-    mqtt_mock: MqttMockHAClient,
+    mqtt_mock: MagicMock,
     mock_phoniebox: MockConfigEntry,
     config: dict,
     media_player_entry: RegistryEntry,
@@ -441,7 +442,7 @@ async def test_cmd_repeat_single(
 
 async def test_cmd_repeat_off(
     hass: HomeAssistant,
-    mqtt_mock: MqttMockHAClient,
+    mqtt_mock: MagicMock,
     mock_phoniebox: MockConfigEntry,
     config: dict,
     media_player_entry: RegistryEntry,
@@ -461,7 +462,7 @@ async def test_cmd_repeat_off(
 
 async def test_cmd_turn_off(
     hass: HomeAssistant,
-    mqtt_mock: MqttMockHAClient,
+    mqtt_mock: MagicMock,
     mock_phoniebox: MockConfigEntry,
     config: dict,
     media_player_entry: RegistryEntry,
@@ -478,7 +479,7 @@ async def test_cmd_turn_off(
 
 async def test_cmd_set_vol_level_50(
     hass: HomeAssistant,
-    mqtt_mock: MqttMockHAClient,
+    mqtt_mock: MagicMock,
     mock_phoniebox: MockConfigEntry,
     config: dict,
     media_player_entry: RegistryEntry,
@@ -495,7 +496,7 @@ async def test_cmd_set_vol_level_50(
 
 async def test_cmd_set_vol_level_100(
     hass: HomeAssistant,
-    mqtt_mock: MqttMockHAClient,
+    mqtt_mock: MagicMock,
     mock_phoniebox: MockConfigEntry,
     config: dict,
     media_player_entry: RegistryEntry,
@@ -512,7 +513,7 @@ async def test_cmd_set_vol_level_100(
 
 async def test_cmd_set_vol_level_23(
     hass: HomeAssistant,
-    mqtt_mock: MqttMockHAClient,
+    mqtt_mock: MagicMock,
     mock_phoniebox: MockConfigEntry,
     config: dict,
     media_player_entry: RegistryEntry,
