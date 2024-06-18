@@ -1,15 +1,15 @@
 {
   "domain": "phoniebox",
   "name": "Phoniebox",
-  "documentation": "https://github.com/c0un7-z3r0/hass-phoniebox",
-  "iot_class": "local_push",
-  "issue_tracker": "https://github.com/c0un7-z3r0/hass-phoniebox/issues",
-  "version": "0.3.3",
-  "config_flow": true,
   "after_dependencies": [
     "mqtt"
   ],
   "codeowners": [
     "@c0un7-z3r0"
-  ]
+  ],
+  "config_flow": true,
+  "documentation": "https://github.com/c0un7-z3r0/hass-phoniebox",
+  "iot_class": "local_push",
+  "issue_tracker": "https://github.com/c0un7-z3r0/hass-phoniebox/issues",
+  "version": "0.3.3"
 }
