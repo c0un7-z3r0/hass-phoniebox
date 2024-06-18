@@ -1,4 +1,4 @@
-"""BlueprintEntity class."""
+"""MediaPlayer class."""
 
 from abc import ABC
 from typing import override
