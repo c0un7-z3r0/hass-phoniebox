@@ -8,7 +8,7 @@ def string_to_bool(value: str) -> bool:
     return False
 
 
-def bool_to_string(value: bool) -> str:  # noqa: FBT001
+def bool_to_string(value: bool) -> str:
     """Boolean string to boolean converter."""
     if value:
         return "true"
