@@ -1,0 +1,117 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Run Home Assistant Core",
+      "type": "shell",
+      "command": "./scripts/develop",
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Pytest",
+      "type": "shell",
+      "command": "python3 -m pytest --timeout=10 tests",
+      "dependsOn": ["Install all Test Requirements"],
+      "group": {
+        "kind": "test",
+        "isDefault": true
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Pytest (changed tests only)",
+      "type": "shell",
+      "command": "python3 -m pytest --timeout=10 --picked",
+      "group": {
+        "kind": "test",
+        "isDefault": true
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Ruff",
+      "type": "shell",
+      "command": "pre-commit run ruff --all-files",
+      "group": {
+        "kind": "test",
+        "isDefault": true
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Pylint",
+      "type": "shell",
+      "command": "pylint custom_components",
+      "dependsOn": ["Install all Requirements"],
+      "group": {
+        "kind": "test",
+        "isDefault": true
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Code Coverage",
+      "detail": "Generate code coverage report for a given integration.",
+      "type": "shell",
+      "command": "python3 -m pytest ./tests/ --cov=custom_component.phoniebox --cov-report term-missing --durations-min=1 --durations=0 --numprocesses=auto",
+      "group": {
+        "kind": "test",
+        "isDefault": true
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Install all Requirements",
+      "type": "shell",
+      "command": "./scripts/setup",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Install all Test Requirements",
+      "type": "shell",
+      "command": "./scripts/setup_tests",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      },
+      "problemMatcher": []
+    }
+  ]
+}
