@@ -1,5 +1,7 @@
+# mypy: disable-error-code="no-any-return"
 """Adds config flow for Blueprint."""
-import logging
+
+from typing import Any, override
 
 import voluptuous as vol
 from homeassistant import config_entries
@@ -12,11 +14,16 @@ class BlueprintFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
 
     VERSION = 1
 
-    def __init__(self):
+    _errors: dict[str, str]
+
+    def __init__(self) -> None:
         """Initialize."""
         self._errors = {}
 
-    async def async_step_user(self, user_input=None):
+    @override
+    async def async_step_user(
+        self, user_input: dict[str, Any] | None = None
+    ) -> config_entries.ConfigFlowResult:
         """Handle a flow initialized by the user."""
         self._errors = {}
 
@@ -25,17 +32,18 @@ class BlueprintFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                 return self.async_create_entry(
                     title=user_input[CONF_PHONIEBOX_NAME], data=user_input
                 )
-            else:
-                self._errors["base"] = "auth"
+            self._errors["base"] = "auth"
 
-            return await self._show_config_form(user_input)
+            return self._show_config_form(user_input)
 
         # Provide defaults for form
         user_input = {CONF_PHONIEBOX_NAME: "", CONF_MQTT_BASE_TOPIC: "phoniebox"}
 
-        return await self._show_config_form(user_input)
+        return self._show_config_form(user_input)
 
-    async def _show_config_form(self, user_input):  # pylint: disable=unused-argument
+    def _show_config_form(
+        self, user_input: dict[str, str]
+    ) -> config_entries.ConfigFlowResult:
         """Show the configuration form to edit location data."""
         return self.async_show_form(
             step_id="user",

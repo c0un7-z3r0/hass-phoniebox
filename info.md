@@ -9,16 +9,17 @@ _Component to integrate your [phoniebox][phoniebox-repo] with [home-assistant][h
 ![ha phoniebox mediaplayer](https://github.com/c0un7-z3r0/hass-phoniebox/blob/main/assets/media_player.png)
 
 **Features**:
-    
+
 - add one or multiple phonieboxes as device to your home assistant
 - media_player integration
 - many sensors that are exposed via mqtt from phoniebox can be used
 - enable / disable rfid or gpio from home assistant as configuration
-- switch to toggle mute or random 
+- switch to toggle mute or random
 
 ## Requirements
-- You will need to setup MQTT Broker in Home Asssitant: [MQTT integration][ha_mqtt]  
-- You will need to setup MQTT on Phoniebox: [Phoniebox MQTT Installation][phoniebox_mqtt_setup]
+
+- You will need to set up MQTT Broker in Home Assistant: [MQTT integration][ha_mqtt]
+- You will need to set up MQTT on Phoniebox: [Phoniebox MQTT Installation][phoniebox_mqtt_setup]
 
 ## Installation
 
@@ -35,7 +36,6 @@ _Component to integrate your [phoniebox][phoniebox-repo] with [home-assistant][h
 
 If you want to install the custom component manually, add the folder `phoniebox/` to `YOUR_CONFIG_DIR/custom_components/`.
 
-
 ## Configuration is done in the UI
 
 1. Once installed you can add your phoniebox as new device in Home Assistant
@@ -49,12 +49,12 @@ and the base MQTT Topic. This helps if you have multiple phonieboxes that you wa
 
 ![ha phoniebox integration](https://github.com/c0un7-z3r0/hass-phoniebox/blob/main/assets/device.png)
 
-* [Documentation on GitHub](https://github.com/c0un7-z3r0/hass-phoniebox/blob/main/README.md)
-* [Report issues here](https://github.com/c0un7-z3r0/hass-phoniebox/issues)
+- [Documentation on GitHub](https://github.com/c0un7-z3r0/hass-phoniebox/blob/main/README.md)
+- [Report issues here](https://github.com/c0un7-z3r0/hass-phoniebox/issues)
 
 <!---->
 
-***
+---
 
 [hass-phoniebox]: https://github.com/c0un7-z3r0/hass-phoniebox
 [commits-shield]: https://img.shields.io/github/commit-activity/w/c0un7-z3r0/hass-phoniebox?style=for-the-badge

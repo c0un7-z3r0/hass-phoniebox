@@ -1,5 +1,8 @@
 """Constants for phoniebox."""
+
 from logging import Logger, getLogger
+
+from homeassistant.components.media_player import MediaPlayerState
 from homeassistant.components.media_player.const import (
     REPEAT_MODE_ALL,
     REPEAT_MODE_OFF,
@@ -20,9 +23,7 @@ from homeassistant.components.media_player.const import (
 
 # Base component constants
 from homeassistant.const import (
-    STATE_IDLE,
-    STATE_PAUSED,
-    STATE_PLAYING, Platform,
+    Platform,
 )
 
 LOGGER: Logger = getLogger(__package__)
@@ -73,22 +74,23 @@ BINARY_SENSOR = "binary_sensor"
 SENSOR = "sensor"
 SWITCH = "switch"
 MEDIA_PLAYER = "media_player"
-PLATFORMS = [SENSOR, BINARY_SENSOR, SWITCH, MEDIA_PLAYER, Platform.BUTTON]
+PLATFORMS = [MEDIA_PLAYER, SENSOR, BINARY_SENSOR, SWITCH, Platform.BUTTON]
 
 # Player
+# noinspection SpellCheckingInspection
 SUPPORT_MQTTMEDIAPLAYER = (
-        SUPPORT_PAUSE
-        | SUPPORT_VOLUME_STEP
-        | SUPPORT_PREVIOUS_TRACK
-        | SUPPORT_VOLUME_SET
-        | SUPPORT_NEXT_TRACK
-        | SUPPORT_PLAY
-        | SUPPORT_VOLUME_MUTE
-        | SUPPORT_SHUFFLE_SET
-        | SUPPORT_REPEAT_SET
-        | SUPPORT_STOP
-        | SUPPORT_SEEK
-        | SUPPORT_TURN_OFF
+    SUPPORT_PAUSE
+    | SUPPORT_VOLUME_STEP
+    | SUPPORT_PREVIOUS_TRACK
+    | SUPPORT_VOLUME_SET
+    | SUPPORT_NEXT_TRACK
+    | SUPPORT_PLAY
+    | SUPPORT_VOLUME_MUTE
+    | SUPPORT_SHUFFLE_SET
+    | SUPPORT_REPEAT_SET
+    | SUPPORT_STOP
+    | SUPPORT_SEEK
+    | SUPPORT_TURN_OFF
 )
 
 PHONIEBOX_REPEAT_OFF = "off"
@@ -104,25 +106,26 @@ HA_REPEAT_TO_PHONIEBOX = {
 PHONIEBOX_START = "start"
 PHONIEBOX_STOP = "stop"
 
-TO_PHONIEBOX_START_STOP = {
-    "true": PHONIEBOX_START,
-    "false": PHONIEBOX_STOP
-}
+TO_PHONIEBOX_START_STOP = {"true": PHONIEBOX_START, "false": PHONIEBOX_STOP}
 
+PHONIEBOX_STATE_OFFLINE = "offline"
 PHONIEBOX_STATE_PLAY = "play"
 PHONIEBOX_STATE_STOP = "stop"
 PHONIEBOX_STATE_PAUSE = "pause"
 
+MEDIA_PLAYER_STATE_UNKNOWN = "unknown"
+
 PHONIEBOX_STATE_TO_HA = {
-    PHONIEBOX_STATE_PLAY: STATE_PLAYING,
-    PHONIEBOX_STATE_STOP: STATE_IDLE,
-    PHONIEBOX_STATE_PAUSE: STATE_PAUSED,
+    "-": MediaPlayerState.OFF,
+    PHONIEBOX_STATE_PLAY: MediaPlayerState.PLAYING,
+    PHONIEBOX_STATE_STOP: MediaPlayerState.IDLE,
+    PHONIEBOX_STATE_PAUSE: MediaPlayerState.PAUSED,
 }
 
 # Configuration and options
 CONF_ENABLED = "enabled"
 CONF_USERNAME = "username"
-CONF_PASSWORD = "password"
+CONF_PASSWORD = "password"  # noqa: S105
 
 CONF_PHONIEBOX_NAME = "phoniebox_name"
 CONF_MQTT_BASE_TOPIC = "mqtt_base_topic"
@@ -136,6 +139,7 @@ PHONIEBOX_ATTR_RFID = "rfid"
 PHONIEBOX_ATTR_MUTE = "mute"
 PHONIEBOX_ATTR_RANDOM = "random"
 PHONIEBOX_ATTR_SCAN = "scan"
+# noinspection SpellCheckingInspection
 PHONIEBOX_ATTR_PLAYER_REWIND = "playerrewind"
 PHONIEBOX_ATTR_REPEAT = "repeat"
 PHONIEBOX_ATTR_THROTTLING = "throttling"
@@ -143,52 +147,82 @@ PHONIEBOX_ATTR_VERSION = "version"
 PHONIEBOX_ATTR_LAST_CARD = "last_card"
 PHONIEBOX_ATTR_ALBUM = "album"
 PHONIEBOX_ATTR_ARTIST = "artist"
+# noinspection SpellCheckingInspection
 PHONIEBOX_ATTR_ALBUM_ARTIST = "albumartist"
 PHONIEBOX_ATTR_EDITION = "edition"
+# noinspection SpellCheckingInspection
 PHONIEBOX_ATTR_REMAINING_STOP_AFTER = "remaining_stopafter"
+# noinspection SpellCheckingInspection
 PHONIEBOX_ATTR_REMAINING_SHUTDOWN_AFTER = "remaining_shutdownafter"
 PHONIEBOX_ATTR_REMAINING_IDLE = "remaining_idle"
+# noinspection SpellCheckingInspection
 PHONIEBOX_ATTR_VOLUME_STEPS = "volstep"
+# noinspection SpellCheckingInspection
 PHONIEBOX_ATTR_MAX_VOLUME = "maxvolume"
 PHONIEBOX_ATTR_IDLE_TIME = "idletime"
 PHONIEBOX_ATTR_DISK_AVAILABLE = "disk_avail"
 PHONIEBOX_ATTR_DISK_TOTAL = "disk_total"
 PHONIEBOX_ATTR_TITLE = "title"
 PHONIEBOX_ATTR_TRACK = "track"
+# noinspection SpellCheckingInspection
 PHONIEBOX_ATTR_TRACK_DATE = "trackdate"
 PHONIEBOX_ATTR_ELAPSED = "elapsed"
 PHONIEBOX_ATTR_DURATION = "duration"
 PHONIEBOX_ATTR_VOLUME = "volume"
+PHONIEBOX_ATTR_STATE = "state"
 
 # Phoniebox commands
+# noinspection SpellCheckingInspection
 PHONIEBOX_CMD_DISABLE_WIFI = "disablewifi"
 PHONIEBOX_CMD_SCAN = "scan"
 PHONIEBOX_CMD_REBOOT = "reboot"
+# noinspection SpellCheckingInspection
 PHONIEBOX_CMD_SHUTDOWN_SILENT = "shutdownsilent"
+# noinspection SpellCheckingInspection
 PHONIEBOX_CMD_PLAYER_REPLAY = "playerreplay"
+# noinspection SpellCheckingInspection
 PHONIEBOX_CMD_PLAYER_REWIND = "playerrewind"
+# noinspection SpellCheckingInspection
 PHONIEBOX_CMD_PLAYER_SEEK = "playerseek"
+# noinspection SpellCheckingInspection
 PHONIEBOX_CMD_PLAY_FOLDER_RECURSIVE = "playfolderrecursive"
+# noinspection SpellCheckingInspection
 PHONIEBOX_CMD_PLAY_FOLDER = "playfolder"
+# noinspection SpellCheckingInspection
 PHONIEBOX_CMD_SWIPE_CARD = "swipecard"
 PHONIEBOX_CMD_SET_GPIO = "gpio"
 PHONIEBOX_CMD_SET_RFID = "rfid"
+# noinspection SpellCheckingInspection
 PHONIEBOX_CMD_PLAYER_STOP_AFTER = "playerstopafter"
+# noinspection SpellCheckingInspection
 PHONIEBOX_CMD_SHUTDOWN_AFTER = "shutdownafter"
+# noinspection SpellCheckingInspection
 PHONIEBOX_CMD_SET_IDLE_TIME = "setidletime"
+# noinspection SpellCheckingInspection
 PHONIEBOX_CMD_SET_MAX_VOLUME = "setmaxvolume"
+# noinspection SpellCheckingInspection
 PHONIEBOX_CMD_SET_VOLUME_STEPS = "setvolstep"
+# noinspection SpellCheckingInspection
 PHONIEBOX_CMD_SET_VOLUME = "setvolume"
 PHONIEBOX_CMD_SHUTDOWN = "shutdown"
+# noinspection SpellCheckingInspection
 PHONIEBOX_CMD_PLAYER_REPEAT = "playerrepeat"
+# noinspection SpellCheckingInspection
 PHONIEBOX_CMD_PLAYER_SHUFFLE = "playershuffle"
+# noinspection SpellCheckingInspection
 PHONIEBOX_CMD_PLAYER_NEXT = "playernext"
+# noinspection SpellCheckingInspection
 PHONIEBOX_CMD_PLAYER_PREV = "playerprev"
+# noinspection SpellCheckingInspection
 PHONIEBOX_CMD_PLAYER_STOP = "playerstop"
+# noinspection SpellCheckingInspection
 PHONIEBOX_CMD_PLAYER_PAUSE = "playerpause"
+# noinspection SpellCheckingInspection
 PHONIEBOX_CMD_PLAYER_PLAY = "playerplay"
 PHONIEBOX_CMD_MUTE = "mute"
+# noinspection SpellCheckingInspection
 PHONIEBOX_CMD_VOLUME_DOWN = "volumedown"
+# noinspection SpellCheckingInspection
 PHONIEBOX_CMD_VOLUME_UP = "volumeup"
 
 BINARY_SWITCHES = [
@@ -210,7 +244,7 @@ STRING_SENSORS = [
     PHONIEBOX_ATTR_ALBUM,
     PHONIEBOX_ATTR_ARTIST,
     PHONIEBOX_ATTR_ALBUM_ARTIST,
-    PHONIEBOX_ATTR_EDITION
+    PHONIEBOX_ATTR_EDITION,
 ]
 NUMBER_SENSORS = [
     PHONIEBOX_ATTR_REMAINING_STOP_AFTER,
@@ -251,3 +285,23 @@ ALL_BUTTONS = [
     BUTTON_SHUFFLE,
     BUTTON_SHUTDOWN_SILENT,
 ]
+
+TOPIC_LENGTH_PLAYER_STATE = 3
+TOPIC_LENGTH_GENERIC_STATE = 2
+
+TOPIC_DOMAIN_STATE = "state"
+# noinspection SpellCheckingInspection
+TOPIC_DOMAIN_TEMPERATUR = "temperature"
+TOPIC_DOMAIN_FILE = "file"
+TOPIC_DOMAIN_VERSION = "version"
+TOPIC_DOMAIN_RANDOM = "random"
+
+NAME_TO_MQTT_COMMAND: dict[str, str] = {
+    BUTTON_SHUFFLE: PHONIEBOX_CMD_PLAYER_SHUFFLE,
+    BUTTON_SCAN: PHONIEBOX_CMD_SCAN,
+    BUTTON_REWIND: PHONIEBOX_CMD_PLAYER_REWIND,
+    BUTTON_REPLAY: PHONIEBOX_CMD_PLAYER_REPLAY,
+    BUTTON_RESTART: PHONIEBOX_CMD_REBOOT,
+    BUTTON_SHUTDOWN: PHONIEBOX_CMD_SHUTDOWN,
+    BUTTON_SHUTDOWN_SILENT: PHONIEBOX_CMD_SHUTDOWN_SILENT,
+}

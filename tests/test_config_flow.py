@@ -1,8 +1,11 @@
 """Test phoniebox config flow."""
+
+from collections.abc import Generator
 from unittest.mock import patch
 
 import pytest
 from homeassistant import config_entries, data_entry_flow
+from homeassistant.core import HomeAssistant
 
 from custom_components.phoniebox.const import DOMAIN
 
@@ -11,17 +14,20 @@ from custom_components.phoniebox.const import DOMAIN
 # since we only want to test the config flow. We test the
 # actual functionality of the integration in other test modules.
 @pytest.fixture(autouse=True)
-def bypass_setup_fixture():
+def bypass_setup_fixture() -> Generator:
     """Prevent setup."""
-    with patch("custom_components.phoniebox.async_setup", return_value=True,), patch(
-        "custom_components.phoniebox.async_setup_entry",
-        return_value=True,
+    with (
+        patch("custom_components.phoniebox.async_setup", return_value=True),
+        patch(
+            "custom_components.phoniebox.async_setup_entry",
+            return_value=True,
+        ),
     ):
         yield
 
 
 # Here we simulate a successful config flow from the backend.
-async def test_successful_config_flow(hass, config):
+async def test_successful_config_flow(hass: HomeAssistant, config: dict) -> None:
     """Test a successful config flow."""
     # Initialize a config flow
     result = await hass.config_entries.flow.async_init(

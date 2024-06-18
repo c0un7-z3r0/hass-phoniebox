@@ -1,18 +1,15 @@
-def string_to_bool(value):
-    """
-    boolean string to boolean converter
-    """
+"""Utility functions."""
+
+
+def string_to_bool(value: str) -> bool:
+    """Boolean string to boolean converter."""
     if value == "true":
         return True
-    else:
-        return False
+    return False
 
 
-def bool_to_string(value: bool):
-    """
-    boolean string to boolean converter
-    """
+def bool_to_string(value: bool) -> str:  # noqa: FBT001
+    """Boolean string to boolean converter."""
     if value:
         return "true"
-    else:
-        return "false"
+    return "false"

@@ -1,2 +1,0 @@
-homeassistant
-python-semantic-release

@@ -1,67 +1,90 @@
 """Binary sensor platform for phoniebox."""
+
 from __future__ import annotations
+
+from typing import TYPE_CHECKING, Any
 
 from homeassistant.components.binary_sensor import (
     BinarySensorDeviceClass,
     BinarySensorEntity,
 )
-from homeassistant.config_entries import ConfigEntries, ConfigEntry
-from homeassistant.core import HomeAssistant
-from homeassistant.helpers.entity_platform import AddEntitiesCallback
+from homeassistant.core import HomeAssistant, callback
 from homeassistant.util import slugify
 
-from .data_coordinator import DataCoordinator
-from .const import BOOLEAN_SENSORS, CONF_PHONIEBOX_NAME, DOMAIN, LOGGER
+from .const import (
+    BOOLEAN_SENSORS,
+    CONF_PHONIEBOX_NAME,
+    DOMAIN,
+    LOGGER,
+    TOPIC_LENGTH_PLAYER_STATE,
+)
 from .entity import PhonieboxEntity
 from .utils import string_to_bool
 
+if TYPE_CHECKING:
+    from homeassistant.components.mqtt.models import ReceiveMessage
+    from homeassistant.config_entries import ConfigEntry
+    from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-def discover_sensors(topic, entry, coordinator):
-    """
-    Based on the topic and entry create the correct binary sensor
-    """
+    from .data_coordinator import DataCoordinator
+
+
+def discover_sensors(
+    topic: str, entry: ConfigEntry, coordinator: DataCoordinator
+) -> BinaryPhonieboxSensor | None:
+    """Based on the topic and entry create the correct binary sensor."""
     parts = topic.split("/")
-    domain = parts[2] if len(parts) == 3 else parts[1]
+    domain = parts[2] if len(parts) == TOPIC_LENGTH_PLAYER_STATE else parts[1]
 
     if domain not in BOOLEAN_SENSORS:
-        return
+        return None
 
     return BinaryPhonieboxSensor(entry, domain, coordinator, None)
 
 
 async def async_setup_entry(
-        hass: HomeAssistant,
-        config_entry: ConfigEntry,
-        async_add_devices: AddEntitiesCallback,
+    hass: HomeAssistant,
+    config_entry: ConfigEntry,
+    async_add_devices: AddEntitiesCallback,
 ) -> None:
-    """Setup binary_sensor platform."""
+    """Set binary_sensor platform up."""
     coordinator: DataCoordinator = hass.data[DOMAIN][config_entry.entry_id]
+    LOGGER.debug("-----> Setup binary sensor")
 
-    def received_msg(msg):
+    @callback
+    def received_msg(msg: ReceiveMessage) -> None:
+        LOGGER.debug("ReceiveMessage %(msg)s", {"msg": msg})
         sensors = discover_sensors(msg.topic, config_entry, coordinator)
         store = coordinator.sensors
 
         if not sensors:
             return
 
-        if isinstance(sensors, BinaryPhonieboxSensor):
-            sensors = (sensors,)
+        sensor_list = (
+            (sensors,) if isinstance(sensors, BinaryPhonieboxSensor) else sensors
+        )
 
-        for sensor in sensors:
+        for sensor in sensor_list:
+            if not isinstance(sensor.name, str):
+                continue
+
             if sensor.name not in store:
                 sensor.hass = hass
-                sensor.set_state(string_to_bool(msg.payload))
+                sensor.set_state(value=string_to_bool(str(msg.payload)))
                 store[sensor.name] = sensor
-                async_add_devices((sensor,), True)
+                LOGGER.debug(
+                    "Registering binary sensor %(name)s", {"name": sensor.name}
+                )
+                async_add_devices(new_entities=(sensor,), update_before_add=True)
             else:
-                store[sensor.name].set_state(string_to_bool(msg.payload))
+                store[sensor.name].set_state(value=string_to_bool(str(msg.payload)))
                 store[sensor.name].async_schedule_update_ha_state()
 
     await coordinator.mqtt_client.async_subscribe("#", received_msg)
 
 
-def _slug(name, poniebox_name):
-    return f"binary_sensor.phoniebox_{poniebox_name}_{slugify(name)}"
+def _slug(name: str, phoniebox_name: str) -> str:
+    return f"binary_sensor.phoniebox_{phoniebox_name}_{slugify(name)}"
 
 
 class BinaryPhonieboxSensor(PhonieboxEntity, BinarySensorEntity):
@@ -70,17 +93,29 @@ class BinaryPhonieboxSensor(PhonieboxEntity, BinarySensorEntity):
     _attr_should_poll = False
 
     def __init__(
-            self,
-            config_entry: ConfigEntry,
-            name: str,
-            coordinator,
-            device_class: BinarySensorDeviceClass = None,
-    ):
+        self,
+        config_entry: ConfigEntry,
+        name: str,
+        coordinator: DataCoordinator,
+        device_class: BinarySensorDeviceClass | None = None,
+    ) -> None:
+        """Init the sensor."""
+        LOGGER.info("---->")
         super().__init__(config_entry, coordinator)
         self.entity_id = _slug(name, config_entry.data[CONF_PHONIEBOX_NAME])
         self._attr_name = name
         self._attr_device_class = device_class
 
-    def set_state(self, value: bool) -> None:
+    def set_event(self, event: Any) -> None:  # pylint: disable=unused-argument  # noqa: ARG002
         """Update the binary sensor with the most recent value."""
+        return
+
+    def set_state(self, *, value: bool) -> None:
+        """Update the binary sensor with the most recent value."""
+        if self._attr_is_on == value:
+            return
+        LOGGER.debug(
+            "Updating binary sensor %(name)s to -> %(value)s",
+            {"name": self.name, "value": value},
+        )
         self._attr_is_on = value

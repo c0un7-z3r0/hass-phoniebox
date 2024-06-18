@@ -8,30 +8,32 @@
 ![Project Maintenance](https://img.shields.io/maintenance/yes/2022.svg?style=for-the-badge)
 [![Validate](https://github.com/c0un7-z3r0/hass-phoniebox/actions/workflows/validate.yml/badge.svg)](https://github.com/c0un7-z3r0/hass-phoniebox/actions/workflows/validate.yml)
 
-
 _Component to integrate your [phoniebox][phoniebox-repo] with [Home Assistant][ha-website]._
 
 ![ha phoniebox mediaplayer](https://github.com/c0un7-z3r0/hass-phoniebox/blob/main/assets/media_player.png)
 
 **Features**:
-    
+
 - add one or multiple phonieboxes as device to your home assistant
 - media_player integration
 - many sensors that are exposed via mqtt from phoniebox can be used
 - enable / disable rfid or gpio from home assistant as configuration
-- switch to toggle mute or random 
+- switch to toggle mute or random
 
-Overview of what Features of Phoniebox have been implemented can be found in the [issues](https://github.com/c0un7-z3r0/hass-phoniebox/issues?q=is%3Aissue+is%3Aopen+label%3Aenhancement). 
+Overview of what Features of Phoniebox have been implemented can be found in
+the [issues](https://github.com/c0un7-z3r0/hass-phoniebox/issues?q=is%3Aissue+is%3Aopen+label%3Aenhancement).
 
 ## How does it work
-Once the custom component is installed you can add your phoniebox as device in home assistant. 
+
+Once the custom component is installed you can add your phoniebox as device in home assistant.
 You can name your phoniebox and configure the MQTT base topic in case you have multiple phonieboxes.
 
 All communication with Phoniebox is running over MQTT.
 
 ## Requirements
-- You will need to setup MQTT Broker in Home Asssitant: [MQTT integration][ha_mqtt]  
-- You will need to setup MQTT on Phoniebox: [Phoniebox MQTT Installation][phoniebox_mqtt_setup]
+
+- You will need to set up MQTT Broker in Home Assistant: [MQTT integration][ha_mqtt]
+- You will need to set up MQTT on Phoniebox: [Phoniebox MQTT Installation][phoniebox_mqtt_setup]
 
 ## Installation
 
@@ -71,7 +73,7 @@ If When you experience issues/bugs with this the best way to report them is to o
 
 ## Contributions are welcome!
 
-***
+---
 
 [hass-phoniebox]: https://github.com/c0un7-z3r0/hass-phoniebox
 [commits-shield]: https://img.shields.io/github/commit-activity/w/c0un7-z3r0/hass-phoniebox?style=for-the-badge

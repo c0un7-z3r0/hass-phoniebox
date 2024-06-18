@@ -1,65 +1,73 @@
 """Buttons to control the phoniebox."""
+
 from __future__ import annotations
 
 from abc import ABC
+from dataclasses import dataclass
+from typing import TYPE_CHECKING, override
 
-from homeassistant.components.button import ButtonEntity, ButtonDeviceClass
-from homeassistant.config_entries import ConfigEntries
+from homeassistant.components.button import ButtonDeviceClass, ButtonEntity
 
-from . import DataCoordinator
-from .const import CONF_PHONIEBOX_NAME, DOMAIN, PHONIEBOX_CMD_PLAYER_SHUFFLE, \
-    PHONIEBOX_CMD_SCAN, PHONIEBOX_CMD_PLAYER_REWIND, PHONIEBOX_CMD_PLAYER_REPLAY, PHONIEBOX_CMD_REBOOT, \
-    PHONIEBOX_CMD_SHUTDOWN, PHONIEBOX_CMD_SHUTDOWN_SILENT, BUTTON_RESTART, BUTTON_SHUFFLE, BUTTON_SCAN, BUTTON_REWIND, \
-    BUTTON_REPLAY, BUTTON_SHUTDOWN, BUTTON_SHUTDOWN_SILENT, ALL_BUTTONS, LOGGER
+from .const import (
+    ALL_BUTTONS,
+    BUTTON_RESTART,
+    CONF_PHONIEBOX_NAME,
+    DOMAIN,
+    LOGGER,
+    NAME_TO_MQTT_COMMAND,
+)
 from .entity import PhonieboxEntity
 from .sensor import _slug
 
+if TYPE_CHECKING:
+    from homeassistant.config_entries import ConfigEntry
+    from homeassistant.core import HomeAssistant
+    from homeassistant.helpers.entity_platform import AddEntitiesCallback
+
+    from . import DataCoordinator
+
+
+@dataclass
+class ButtonData:
+    """Button Data."""
+
+    name: str
+    device_class: ButtonDeviceClass | None = None
+    on_press_mqtt_topic: str | None = None
+
 
 def find_device_class(name: str) -> ButtonDeviceClass | None:
-    """
-    Based on the button name find the corresponding device class
-    """
+    """Based on the button name find the corresponding device class."""
     if name == BUTTON_RESTART:
         return ButtonDeviceClass.RESTART
     return None
 
 
-def find_mqtt_topic(name: str) -> str:
-    """
-    Based on the button name find the corresponding mqtt command
-    """
-    if name == BUTTON_SHUFFLE:
-        return PHONIEBOX_CMD_PLAYER_SHUFFLE
-    if name == BUTTON_SCAN:
-        return PHONIEBOX_CMD_SCAN
-    if name == BUTTON_REWIND:
-        return PHONIEBOX_CMD_PLAYER_REWIND
-    if name == BUTTON_REPLAY:
-        return PHONIEBOX_CMD_PLAYER_REPLAY
-    if name == BUTTON_RESTART:
-        return PHONIEBOX_CMD_REBOOT
-    if name == BUTTON_SHUTDOWN:
-        return PHONIEBOX_CMD_SHUTDOWN
-    if name == BUTTON_SHUTDOWN_SILENT:
-        return PHONIEBOX_CMD_SHUTDOWN_SILENT
+def find_mqtt_topic(name: str) -> str | None:
+    """Based on the button name find the corresponding mqtt command."""
+    return getattr(NAME_TO_MQTT_COMMAND, name, None)
 
 
-async def async_setup_entry(hass, entry, async_add_devices):
-    """Setup button platform."""
+async def async_setup_entry(
+    hass: HomeAssistant, entry: ConfigEntry, async_add_devices: AddEntitiesCallback
+) -> None:
+    """Set button platform up."""
     coordinator = hass.data[DOMAIN][entry.entry_id]
     buttons: list[PhonieboxButton] = []
     store = coordinator.buttons
 
-    for button_name in ALL_BUTTONS:
-        buttons.append(
-            PhonieboxButton(
-                config_entry=entry,
+    buttons.extend(
+        PhonieboxButton(
+            config_entry=entry,
+            coordinator=coordinator,
+            data=ButtonData(
                 name=button_name,
-                coordinator=coordinator,
                 device_class=find_device_class(button_name),
                 on_press_mqtt_topic=find_mqtt_topic(button_name),
-            )
+            ),
         )
+        for button_name in ALL_BUTTONS
+    )
 
     if len(buttons) == 0:
         return
@@ -72,7 +80,7 @@ async def async_setup_entry(hass, entry, async_add_devices):
                 "Registering buttons %(name)s",
                 {"name": button.name},
             )
-            async_add_devices((button,), True)
+            async_add_devices(new_entities=(button,), update_before_add=True)
 
 
 class PhonieboxButton(PhonieboxEntity, ButtonEntity, ABC):
@@ -81,20 +89,26 @@ class PhonieboxButton(PhonieboxEntity, ButtonEntity, ABC):
     _attr_should_poll = False
 
     def __init__(
-            self,
-            config_entry: ConfigEntries,
-            name: str,
-            coordinator: DataCoordinator,
-            device_class: ButtonDeviceClass = None,
-            on_press_mqtt_topic=None,
-    ):
+        self,
+        config_entry: ConfigEntry,
+        coordinator: DataCoordinator,
+        data: ButtonData,
+    ) -> None:
+        """Init the button."""
         super().__init__(config_entry, coordinator)
-        self.entity_id = _slug(name, config_entry.data[CONF_PHONIEBOX_NAME])
-        self._attr_name = name
-        self._attr_device_class = device_class
-        self._on_press_mqtt_topic = on_press_mqtt_topic
+        self.entity_id = _slug(data.name, config_entry.data[CONF_PHONIEBOX_NAME])
+        self._attr_name = data.name
+        self._attr_device_class = data.device_class
+        self._on_press_mqtt_topic = data.on_press_mqtt_topic
 
+    @override
     async def async_press(self) -> None:
         """Press the button."""
-        if self._on_press_mqtt_topic:
-            await self.mqtt_client.async_publish(f"cmd/{self._on_press_mqtt_topic}", {})
+        if self._on_press_mqtt_topic is not None:
+            LOGGER.info(
+                "Pressing button ------> %(topic)s",
+                {"topic": self._on_press_mqtt_topic},
+            )
+            await self.mqtt_client.async_publish(
+                f"cmd/{self._on_press_mqtt_topic}", None
+            )

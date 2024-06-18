@@ -1,5 +1,8 @@
 """Test integration_blueprint setup process."""
 
+from homeassistant.config_entries import ConfigEntry
+from homeassistant.core import HomeAssistant
+
 from custom_components.phoniebox import (
     DataCoordinator,
     MqttClient,
@@ -15,25 +18,29 @@ from custom_components.phoniebox.const import DOMAIN, MEDIA_PLAYER
 # Home Assistant using the pytest_homeassistant_custom_component plugin.
 # Assertions allow you to verify that the return value of whatever is on the left
 # side of the assertion matches with the right side.
-async def test_setup_unload_and_reload_entry(hass, mock_phoniebox):
+async def test_setup_unload_and_reload_entry(
+    hass: HomeAssistant, mock_phoniebox: ConfigEntry
+) -> None:
     """Test entry setup and unload."""
-
     config_entry = mock_phoniebox
     # Set up the entry and assert that the values set during setup are where we expect
     assert await async_setup_entry(hass, config_entry)
-    assert DOMAIN in hass.data and config_entry.entry_id in hass.data[DOMAIN]
-    assert type(hass.data[DOMAIN][config_entry.entry_id]) == DataCoordinator
+    assert DOMAIN in hass.data
+    assert config_entry.entry_id in hass.data[DOMAIN]
+    assert type(hass.data[DOMAIN][config_entry.entry_id]) is DataCoordinator
     assert MEDIA_PLAYER in hass.data[DOMAIN][config_entry.entry_id].platforms
-    assert type(hass.data[DOMAIN][config_entry.entry_id].mqtt_client) == MqttClient
+    assert type(hass.data[DOMAIN][config_entry.entry_id].mqtt_client) is MqttClient
 
     assert hass.services
 
     # Reload the entry and assert that the data from above is still there
-    assert await async_reload_entry(hass, config_entry) is None
-    assert DOMAIN in hass.data and config_entry.entry_id in hass.data[DOMAIN]
-    assert type(hass.data[DOMAIN][config_entry.entry_id]) == DataCoordinator
+    await async_reload_entry(hass, config_entry)
+
+    assert DOMAIN in hass.data
+    assert config_entry.entry_id in hass.data[DOMAIN]
+    assert type(hass.data[DOMAIN][config_entry.entry_id]) is DataCoordinator
     assert MEDIA_PLAYER in hass.data[DOMAIN][config_entry.entry_id].platforms
-    assert type(hass.data[DOMAIN][config_entry.entry_id].mqtt_client) == MqttClient
+    assert type(hass.data[DOMAIN][config_entry.entry_id].mqtt_client) is MqttClient
 
     # Unload the entry and verify that the data has been removed
     assert await async_unload_entry(hass, config_entry)

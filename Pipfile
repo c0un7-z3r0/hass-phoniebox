@@ -1,0 +1,5 @@
+[packages]
+ruff = "==0.4.8"
+pytest-homeassistant-custom-component = "*"
+paho-mqtt = "*"
+aiohttp-cors = "*"
