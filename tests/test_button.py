@@ -1,6 +1,7 @@
 """Tests for the Phoniebox Buttons."""
 
 from typing import TYPE_CHECKING
+from unittest.mock import MagicMock
 
 from homeassistant.components.button import SERVICE_PRESS
 from homeassistant.const import ATTR_ENTITY_ID
@@ -10,7 +11,6 @@ from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 from custom_components.phoniebox.button import find_mqtt_topic
 from custom_components.phoniebox.const import ALL_BUTTONS
-from tests.typing import MqttMockHAClient
 
 if TYPE_CHECKING:
     from homeassistant.helpers.entity_registry import RegistryEntry
@@ -32,7 +32,7 @@ async def test_button_registry(
 
 async def test_button_press(
     hass: HomeAssistant,
-    mqtt_mock: MqttMockHAClient,
+    mqtt_mock: MagicMock,
     mock_phoniebox: MockConfigEntry,
     config: dict,
 ) -> None:

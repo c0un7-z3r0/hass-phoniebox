@@ -10,12 +10,12 @@ jobs:
     name: Validate
     steps:
       - name: Check out code from GitHub
-        uses: "actions/checkout@v2"
+        uses: "actions/checkout@v4"
 
       - name: Setup Python
-        uses: "actions/setup-python@v1"
+        uses: "actions/setup-python@v5"
         with:
-          python-version: "3.9"
+          python-version: "3.12"
 
       - name: HACS validation
         uses: hacs/action@main
@@ -41,38 +41,30 @@ jobs:
 
     steps:
       - name: Check out code from GitHub
-        uses: "actions/checkout@v2"
+        uses: "actions/checkout@v4"
 
       # Initializes the CodeQL tools for scanning.
       - name: Initialize CodeQL
-        uses: github/codeql-action/init@v1
+        uses: github/codeql-action/init@v3
         with:
           languages: ${{ matrix.language }}
       - name: Autobuild
-        uses: github/codeql-action/autobuild@v1
+        uses: github/codeql-action/autobuild@v3
       - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v1
+        uses: github/codeql-action/analyze@v3
 
   tests:
     runs-on: "ubuntu-latest"
     name: Run tests
     steps:
       - name: Check out code from GitHub
-        uses: "actions/checkout@v2"
+        uses: "actions/checkout@v4"
       - name: Setup Python
-        uses: "actions/setup-python@v1"
+        uses: "actions/setup-python@v5"
         with:
-          python-version: "3.9"
+          python-version: "3.12"
       - name: Install requirements
-        run: python3 -m pip install -r requirements_test.txt
+        run: python3 -m pip install -r requirements.txt
       - name: Run tests
-        run: |
-          pytest \
-            -qq \
-            --timeout=9 \
-            --durations=10 \
-            -n auto \
-            --cov custom_components.phoniebox \
-            -o console_output_style=count \
-            -p no:sugar \
-            test
+        run: pytest --cov custom_components.phoniebox -o console_output_style=count -p no:sugar -qq -n auto
+
