@@ -66,13 +66,10 @@ jobs:
       - name: Install requirements
         run: python3 -m pip install -r requirements.txt
       - name: Run tests
-        run: |
-          pytest \
-            -qq \
-            --timeout=9 \
-            --durations=10 \
-            -n auto \
-            --cov custom_components.phoniebox \
-            -o console_output_style=count \
-            -p no:sugar \
-            test
+        run: pytest \
+          --cov custom_components.phoniebox \
+          -o console_output_style=count \
+          -p no:sugar \
+          -qq \
+          -n auto
+
