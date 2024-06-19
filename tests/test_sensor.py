@@ -2,7 +2,7 @@
 
 from typing import TYPE_CHECKING
 
-from homeassistant.const import UnitOfInformation, UnitOfTemperature
+from homeassistant.const import EntityCategory, UnitOfInformation, UnitOfTemperature
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers import entity_registry as er
 from pytest_homeassistant_custom_component.common import (
@@ -28,22 +28,32 @@ async def test_sensor_registry(
     )
 
     async_fire_mqtt_message(hass, "test_phoniebox/attribute/version", MOCK_VERSION)
+    async_fire_mqtt_message(hass, "test_phoniebox/attribute/last_card", "1234213")
+
     await hass.async_block_till_done()
 
     er_items_after = er.async_entries_for_config_entry(
         entity_registry, mock_phoniebox.entry_id
     )
-    assert len(er_items_after) == len(er_items_before) + 1  # now added the sensor
+    assert len(er_items_after) == len(er_items_before) + 2  # now added the sensor
 
     entry: RegistryEntry = entity_registry.async_get(
         "sensor.phoniebox_test_box_version"
     )
     assert entry
     assert entry.unique_id == "test_box-sensor.phoniebox_test_box_version"
+    assert entry.entity_category == EntityCategory.DIAGNOSTIC
 
     version_sensor_state = hass.states.get("sensor.phoniebox_test_box_version")
     assert version_sensor_state is not None
     assert version_sensor_state.state == MOCK_VERSION
+
+    last_card: RegistryEntry = entity_registry.async_get(
+        "sensor.phoniebox_test_box_last_card"
+    )
+    assert last_card
+    assert last_card.unique_id == "test_box-sensor.phoniebox_test_box_last_card"
+    assert last_card.entity_category is None
 
 
 async def test_sensor_registry_ignore_value(

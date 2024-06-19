@@ -8,7 +8,7 @@ from typing import Any
 from homeassistant.components.mqtt.models import ReceiveMessage
 from homeassistant.components.sensor import SensorDeviceClass, SensorEntity
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import UnitOfInformation, UnitOfTemperature
+from homeassistant.const import EntityCategory, UnitOfInformation, UnitOfTemperature
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.util import slugify
@@ -16,6 +16,7 @@ from homeassistant.util import slugify
 from .const import (
     BOOLEAN_SENSORS,
     CONF_PHONIEBOX_NAME,
+    DIAGNOSTIC_SENSORS,
     DOMAIN,
     GIGABYTE_SENSORS,
     IGNORE_SENSORS,
@@ -38,6 +39,7 @@ class SensorData:
 
     name: str
     units: UnitOfInformation | UnitOfTemperature | None
+    entity_category: EntityCategory | None = None
     icon: str | None = None
     device_class: SensorDeviceClass | None = None
     extract_value: Callable[[Any], float | str] | None = None
@@ -63,6 +65,7 @@ class GenericPhonieboxSensor(PhonieboxEntity, SensorEntity):
         self._attr_icon = data.icon
         self._attr_device_class = data.device_class
         self.extract_value = data.extract_value
+        self._attr_entity_category = data.entity_category
 
     def set_state(self, *, value: bool) -> None:  # noqa: ARG002 # pylint: disable=unused-argument
         """Update the sensor with the most recent event."""
@@ -110,6 +113,10 @@ def discover_sensors(  # noqa: PLR0911 # pylint: disable=too-many-return-stateme
     if domain in IGNORE_SENSORS or domain in BOOLEAN_SENSORS:
         return None
 
+    entity_category = (
+        EntityCategory.DIAGNOSTIC if domain in DIAGNOSTIC_SENSORS else None
+    )
+
     if domain == TOPIC_DOMAIN_TEMPERATUR:
 
         def temp_string_to_float(temp_str: str) -> float:
@@ -120,6 +127,7 @@ def discover_sensors(  # noqa: PLR0911 # pylint: disable=too-many-return-stateme
             coordinator=coordinator,
             data=SensorData(
                 name=domain,
+                entity_category=entity_category,
                 units=UnitOfTemperature.CELSIUS,
                 device_class=SensorDeviceClass.TEMPERATURE,
                 extract_value=temp_string_to_float,
@@ -133,6 +141,7 @@ def discover_sensors(  # noqa: PLR0911 # pylint: disable=too-many-return-stateme
             data=SensorData(
                 name=domain,
                 units=UnitOfInformation.GIGABYTES,
+                entity_category=entity_category,
             ),
         )
 
@@ -143,6 +152,7 @@ def discover_sensors(  # noqa: PLR0911 # pylint: disable=too-many-return-stateme
             data=SensorData(
                 name="state",
                 units=None,
+                entity_category=entity_category,
             ),
         )
     if is_player_state(domain, parts):
@@ -152,6 +162,7 @@ def discover_sensors(  # noqa: PLR0911 # pylint: disable=too-many-return-stateme
             data=SensorData(
                 name="player state",
                 units=None,
+                entity_category=entity_category,
             ),
         )
 
@@ -163,7 +174,12 @@ def discover_sensors(  # noqa: PLR0911 # pylint: disable=too-many-return-stateme
         return GenericPhonieboxSensor(
             config_entry=entry,
             coordinator=coordinator,
-            data=SensorData(name="source", units=None, extract_value=find_source),
+            data=SensorData(
+                name="source",
+                units=None,
+                extract_value=find_source,
+                entity_category=entity_category,
+            ),
         )
 
     if domain == TOPIC_DOMAIN_VERSION:
@@ -173,7 +189,11 @@ def discover_sensors(  # noqa: PLR0911 # pylint: disable=too-many-return-stateme
         return GenericPhonieboxSensor(
             config_entry=entry,
             coordinator=coordinator,
-            data=SensorData(name=domain, units=None),
+            data=SensorData(
+                name=domain,
+                units=None,
+                entity_category=entity_category,
+            ),
         )
 
     return None
