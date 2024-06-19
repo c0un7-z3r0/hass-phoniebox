@@ -76,7 +76,7 @@ from .const import (
 from .data_coordinator import DataCoordinator
 from .entity import PhonieboxEntity
 from .services import async_register_custom_services
-from .utils import bool_to_string, string_to_bool
+from .utils import bool_to_string, parse_float_save, parse_int_save, string_to_bool
 
 
 async def async_setup_entry(
@@ -129,7 +129,7 @@ class PhonieboxMediaPlayer(PhonieboxEntity, MediaPlayerEntity, ABC):
         new_value = str(msg.payload)
 
         if changed_attribute_name == PHONIEBOX_ATTR_VOLUME:
-            self._attr_volume_level = float(new_value) / 100.0
+            self._attr_volume_level = parse_float_save(new_value) / 100.0
         elif changed_attribute_name == PHONIEBOX_ATTR_STATE:
             self._attr_state = PHONIEBOX_STATE_TO_HA[new_value]
         elif changed_attribute_name == PHONIEBOX_ATTR_MUTE:
@@ -137,19 +137,18 @@ class PhonieboxMediaPlayer(PhonieboxEntity, MediaPlayerEntity, ABC):
         elif changed_attribute_name == PHONIEBOX_ATTR_RANDOM:
             self._attr_shuffle = string_to_bool(new_value)
         elif changed_attribute_name == PHONIEBOX_ATTR_MAX_VOLUME:
-            self._max_volume = int(new_value)
+            self._max_volume = parse_int_save(new_value, 100)
         elif changed_attribute_name == PHONIEBOX_ATTR_DURATION:
             self._attr_media_duration = sum(
-                x * int(t)
+                x * parse_int_save(t)
                 for x, t in zip([3600, 60, 1], new_value.split(":"), strict=False)
             )
         elif changed_attribute_name == PHONIEBOX_ATTR_TRACK:
             track_number = new_value.split(sep="/", maxsplit=1)[0]
-
-            self._attr_media_track = int(track_number)
+            self._attr_media_track = parse_int_save(track_number)
         elif changed_attribute_name == PHONIEBOX_ATTR_ELAPSED:
             self._attr_media_position = sum(
-                x * int(t)
+                x * parse_int_save(t)
                 for x, t in zip([3600, 60, 1], new_value.split(":"), strict=False)
             )
         elif changed_attribute_name == PHONIEBOX_ATTR_ARTIST:
@@ -161,14 +160,12 @@ class PhonieboxMediaPlayer(PhonieboxEntity, MediaPlayerEntity, ABC):
         elif changed_attribute_name == PHONIEBOX_ATTR_ALBUM_ARTIST:
             self._attr_media_album_artist = new_value
         elif changed_attribute_name == PHONIEBOX_ATTR_VOLUME_STEPS:
-            self._vol_steps = int(new_value)
+            self._vol_steps = parse_int_save(new_value)
         elif changed_attribute_name == PHONIEBOX_ATTR_REPEAT:
-            if new_value == "true":
-                # is bad but phoniebox will only say if repeat is on or off
-                self._attr_repeat = REPEAT_MODE_ONE
-            else:
-                self._attr_repeat = REPEAT_MODE_OFF
-
+            # is bad but phoniebox will only say if repeat is on or off
+            self._attr_repeat = (
+                REPEAT_MODE_ONE if new_value == "true" else REPEAT_MODE_OFF
+            )
         self.schedule_update_ha_state(force_refresh=True)
 
     async def update_device_state(self, msg: ReceiveMessage) -> None:
@@ -264,7 +261,7 @@ class PhonieboxMediaPlayer(PhonieboxEntity, MediaPlayerEntity, ABC):
     async def async_set_volume_level(self, volume: float) -> None:
         """Set volume level, range 0..1."""
         await self.mqtt_client.async_publish_cmd(
-            PHONIEBOX_CMD_SET_VOLUME, int(volume * 100)
+            PHONIEBOX_CMD_SET_VOLUME, parse_int_save(volume * 100)
         )
 
     async def async_set_volume_steps(self, volume_steps: int) -> None:

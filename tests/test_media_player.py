@@ -825,3 +825,21 @@ async def test_repeat(
     phoniebox_state = hass.states.get("media_player.phoniebox_test_box")
     assert phoniebox_state is not None
     assert phoniebox_state.attributes.get(ATTR_MEDIA_REPEAT) == REPEAT_MODE_OFF
+
+
+async def test_bugfix_parse_value(
+    hass: HomeAssistant, mock_phoniebox: MockConfigEntry, config: dict
+) -> None:
+    """
+    Test parsing of values in mediaplayer.
+
+    https://github.com/c0un7-z3r0/hass-phoniebox/issues/45
+    """
+    phoniebox_state = hass.states.get("media_player.phoniebox_test_box")
+    assert phoniebox_state is not None
+
+    async_fire_mqtt_message(hass, "test_phoniebox/attribute/volume", "-")
+    await hass.async_block_till_done()
+    phoniebox_state = hass.states.get("media_player.phoniebox_test_box")
+    assert phoniebox_state is not None
+    assert phoniebox_state.attributes.get(ATTR_MEDIA_VOLUME_LEVEL) == 0.0
