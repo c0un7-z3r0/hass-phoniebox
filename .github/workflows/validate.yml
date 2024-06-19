@@ -1,13 +1,10 @@
-name: "Validate"
-on:
-  push:
-  pull_request:
-  schedule:
-    - cron: "0 0 * * *"
+name: "Validate Changes"
+on: [ push, pull_request, workflow_dispatch ]
+
 jobs:
   validate:
     runs-on: "ubuntu-latest"
-    name: Validate
+    name: HA validation
     steps:
       - name: Check out code from GitHub
         uses: "actions/checkout@v4"
@@ -26,36 +23,9 @@ jobs:
       - name: Hassfest validation
         uses: home-assistant/actions/hassfest@master
 
-  analyze:
-    name: Analyze
-    runs-on: ubuntu-latest
-    permissions:
-      actions: read
-      contents: read
-      security-events: write
-
-    strategy:
-      fail-fast: false
-      matrix:
-        language: [ "python" ]
-
-    steps:
-      - name: Check out code from GitHub
-        uses: "actions/checkout@v4"
-
-      # Initializes the CodeQL tools for scanning.
-      - name: Initialize CodeQL
-        uses: github/codeql-action/init@v3
-        with:
-          languages: ${{ matrix.language }}
-      - name: Autobuild
-        uses: github/codeql-action/autobuild@v3
-      - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v3
-
   tests:
     runs-on: "ubuntu-latest"
-    name: Run tests
+    name: tests
     steps:
       - name: Check out code from GitHub
         uses: "actions/checkout@v4"
