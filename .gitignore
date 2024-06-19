@@ -137,3 +137,6 @@ venv.bak/
 /config/.HA_VERSION
 /config/home-assistant.log.1
 /config/home-assistant_v2.db
+/config/home-assistant.log.fault
+/config/home-assistant_v2.db-shm
+/config/home-assistant_v2.db-wal
