@@ -18,7 +18,6 @@ jobs:
         uses: hacs/action@main
         with:
           CATEGORY: integration
-          ignore: brands
 
       - name: Hassfest validation
         uses: home-assistant/actions/hassfest@master
