@@ -9,7 +9,7 @@ aiohttp_cors
 pre-commit
 mypy
 pylint
-pytest~=8.2.0
+pytest~=8.2.2
 voluptuous~=0.13.1
 pytest-cov
 pytest-homeassistant-custom-component
