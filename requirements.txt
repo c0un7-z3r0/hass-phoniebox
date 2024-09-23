@@ -1,5 +1,5 @@
 colorlog==6.8.2
-homeassistant==2024.6.4
+homeassistant==2024.9.2
 home-assistant-frontend==20240610.1
 pip>=23.3,<24.2
 ruff==0.4.8
