@@ -5,9 +5,7 @@ from typing import Any
 
 def string_to_bool(value: str) -> bool:
     """Boolean string to boolean converter."""
-    if value == "true":
-        return True
-    return False
+    return value == "true"
 
 
 def bool_to_string(value: bool) -> str:  # noqa: FBT001

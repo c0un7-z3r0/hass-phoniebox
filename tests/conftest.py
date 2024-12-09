@@ -1,6 +1,6 @@
 """Global fixtures for phoniebox integration."""
 
-from collections.abc import Generator
+from collections.abc import AsyncGenerator, Generator
 from typing import Any
 
 # Fixtures allow you to replace functions with a Mock object. You can perform
@@ -92,8 +92,17 @@ async def mock_phoniebox(
 
 
 @pytest.fixture(name="media_player_entry")
-def media_player_entry(hass: HomeAssistant) -> RegistryEntry:
+def media_player_entry(hass: HomeAssistant) -> RegistryEntry | None:
     """Create hass config fixture."""
     er = entity_registry.async_get(hass)
-    entry: RegistryEntry = er.async_get("media_player.phoniebox_test_box")
+    entry: RegistryEntry | None = er.async_get("media_player.phoniebox_test_box")
     return entry
+
+
+@pytest.fixture(autouse=True)
+async def cleanup_timers(hass: HomeAssistant) -> AsyncGenerator[None, None]:
+    """Cancel all lingering timers."""
+    yield
+    # ruff: noqa: SLF001
+    for timer in list(hass.loop._scheduled):
+        timer.cancel()
