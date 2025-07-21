@@ -14,13 +14,30 @@ if TYPE_CHECKING:
 
 
 class DataCoordinator:  # pylint: disable=too-few-public-methods
-    """Class to manage date of the integration."""
+    """
+    Class to manage data of the integration.
+
+    This coordinator centralizes data management for the Phoniebox integration,
+    maintaining references to all entities and the MQTT client.
+    """
 
     def __init__(self, mqtt_client: MqttClient) -> None:
-        """Initialize."""
+        """
+        Initialize the data coordinator.
+
+        Args:
+        ----
+            mqtt_client: The MQTT client instance for communication
+
+        """
+        # Use immutable approach for platforms list initialization
         self.platforms: list[str] = []
         self.mqtt_client = mqtt_client
+
+        # Entity storage dictionaries
         self.sensors: dict[str, BinaryPhonieboxSensor | GenericPhonieboxSensor] = {}
         self.switches: dict[str, PhonieboxBinarySwitch] = {}
         self.buttons: dict[str, PhonieboxButton] = {}
+
+        # Version information
         self.version = "unknown"
