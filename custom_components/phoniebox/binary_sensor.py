@@ -9,7 +9,6 @@ from homeassistant.components.binary_sensor import (
     BinarySensorEntity,
 )
 from homeassistant.core import HomeAssistant, callback
-from homeassistant.util import slugify
 
 from .const import (
     BOOLEAN_SENSORS,
@@ -19,7 +18,11 @@ from .const import (
     TOPIC_LENGTH_PLAYER_STATE,
 )
 from .entity import PhonieboxEntity
-from .utils import string_to_bool
+from .utils import (
+    create_entity_slug,
+    create_mqtt_context,
+    handle_mqtt_entity_by_type,
+)
 
 if TYPE_CHECKING:
     from homeassistant.components.mqtt.models import ReceiveMessage
@@ -68,23 +71,24 @@ async def async_setup_entry(
             if not isinstance(sensor.name, str):
                 continue
 
-            if sensor.name not in store:
-                sensor.hass = hass
-                sensor.set_state(value=string_to_bool(str(msg.payload)))
-                store[sensor.name] = sensor
-                LOGGER.debug(
-                    "Registering binary sensor %(name)s", {"name": sensor.name}
-                )
-                async_add_devices(new_entities=(sensor,), update_before_add=True)
-            else:
-                store[sensor.name].set_state(value=string_to_bool(str(msg.payload)))
-                store[sensor.name].async_schedule_update_ha_state()
+            context = create_mqtt_context(
+                entity=sensor,
+                store=store,
+                hass=hass,
+                msg_payload=msg.payload,
+                async_add_entities_callback=async_add_devices,
+            )
+            handle_mqtt_entity_by_type(
+                entity_type="binary_sensor",
+                context=context,
+                debug_logger=LOGGER,
+            )
 
     await coordinator.mqtt_client.async_subscribe("#", received_msg)
 
 
 def _slug(name: str, phoniebox_name: str) -> str:
-    return f"binary_sensor.phoniebox_{phoniebox_name}_{slugify(name)}"
+    return create_entity_slug("binary_sensor", name, phoniebox_name)
 
 
 class BinaryPhonieboxSensor(PhonieboxEntity, BinarySensorEntity):
