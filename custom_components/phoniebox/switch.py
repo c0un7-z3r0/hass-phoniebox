@@ -23,11 +23,7 @@ from .const import (
     TOPIC_LENGTH_PLAYER_STATE,
 )
 from .entity import PhonieboxEntity
-from .utils import (
-    create_entity_slug,
-    create_mqtt_context,
-    handle_mqtt_entity_by_type,
-)
+from .utils import create_entity_slug, create_mqtt_context, handle_mqtt_entity_by_type
 
 if TYPE_CHECKING:
     from homeassistant.components.mqtt.models import ReceiveMessage

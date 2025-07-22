@@ -1,9 +1,11 @@
 """BlueprintEntity class."""
 
+from functools import cached_property
 from typing import Any
 
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.helpers.entity import DeviceInfo, Entity
+from homeassistant.helpers.device_registry import DeviceInfo
+from homeassistant.helpers.entity import Entity
 
 from .const import ATTRIBUTION, DOMAIN, NAME, VERSION
 from .data_coordinator import DataCoordinator
@@ -20,12 +22,12 @@ class PhonieboxEntity(Entity):
         self.coordinator = coordinator
         self.mqtt_client = coordinator.mqtt_client
 
-    @property
-    def unique_id(self) -> str:
+    @cached_property
+    def unique_id(self) -> str | None:
         """Return a unique ID to use for this entity."""
         return f"{self.config_entry.entry_id}-{self.entity_id}"
 
-    @property
+    @cached_property
     def device_info(self) -> DeviceInfo:
         """Returns the device info."""
         return DeviceInfo(
@@ -36,7 +38,7 @@ class PhonieboxEntity(Entity):
             sw_version=self.coordinator.version,
         )
 
-    @property
+    @cached_property
     def extra_state_attributes(self) -> dict[str, Any]:
         """Return the state attributes."""
         return {

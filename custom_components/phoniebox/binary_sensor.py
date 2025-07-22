@@ -18,11 +18,7 @@ from .const import (
     TOPIC_LENGTH_PLAYER_STATE,
 )
 from .entity import PhonieboxEntity
-from .utils import (
-    create_entity_slug,
-    create_mqtt_context,
-    handle_mqtt_entity_by_type,
-)
+from .utils import create_entity_slug, create_mqtt_context, handle_mqtt_entity_by_type
 
 if TYPE_CHECKING:
     from homeassistant.components.mqtt.models import ReceiveMessage
@@ -50,7 +46,20 @@ async def async_setup_entry(
     config_entry: ConfigEntry,
     async_add_devices: AddEntitiesCallback,
 ) -> None:
-    """Set binary_sensor platform up."""
+    """
+    Set binary_sensor platform up.
+
+    Set up the binary sensor platform for the Phoniebox integration.
+    This function initializes the binary sensors based on the configuration entry
+    and subscribes to MQTT messages to receive updates for the sensors.
+
+    Args:
+    ----
+        hass: The Home Assistant instance.
+        config_entry: The configuration entry for the Phoniebox integration.
+        async_add_devices: Callback to add devices to Home Assistant.
+
+    """
     coordinator: DataCoordinator = hass.data[DOMAIN][config_entry.entry_id]
     LOGGER.debug("-----> Setup binary sensor")
 
@@ -92,7 +101,27 @@ def _slug(name: str, phoniebox_name: str) -> str:
 
 
 class BinaryPhonieboxSensor(PhonieboxEntity, BinarySensorEntity):
-    """phoniebox binary_sensor class."""
+    """
+    Binary sensor entity for Phoniebox integration.
+
+    This class represents a binary sensor that can be used to track boolean states
+    in the Phoniebox system, such as play/pause status, connection state, or other
+    on/off conditions.
+
+    Attributes
+    ----------
+        _attr_should_poll: Set to False as the sensor is updated via events.
+        entity_id: Unique identifier for the sensor entity.
+        _attr_name: Display name of the sensor.
+        _attr_device_class: Classification of the binary sensor type.
+        _attr_is_on: Current boolean state of the sensor.
+
+    Methods
+    -------
+        set_event: Placeholder method for handling events.
+        set_state: Updates the sensor's boolean state and triggers HA updates.
+
+    """
 
     _attr_should_poll = False
 
@@ -103,19 +132,53 @@ class BinaryPhonieboxSensor(PhonieboxEntity, BinarySensorEntity):
         coordinator: DataCoordinator,
         device_class: BinarySensorDeviceClass | None = None,
     ) -> None:
-        """Init the sensor."""
-        LOGGER.info("---->")
+        """
+        Init the binary sensor.
+
+        Initializes the binary sensor with the given configuration entry, name,
+        coordinator, and optional device class.
+
+        Args:
+        ----
+            config_entry: The configuration entry for the Phoniebox integration.
+            name: The name of the binary sensor.
+            coordinator: The data coordinator managing the Phoniebox data.
+            device_class: Optional device class for the binary sensor.
+
+        """
         super().__init__(config_entry, coordinator)
         self.entity_id = _slug(name, config_entry.data[CONF_PHONIEBOX_NAME])
         self._attr_name = name
         self._attr_device_class = device_class
 
     def set_event(self, event: Any) -> None:  # pylint: disable=unused-argument  # noqa: ARG002
-        """Update the binary sensor with the most recent value."""
+        """
+        Update the binary sensor with the most recent value.
+
+        This method is a placeholder and currently does not implement any functionality.
+        """
         return
 
     def set_state(self, *, value: bool) -> None:
-        """Update the binary sensor with the most recent value."""
+        """
+        Update the binary sensor with the most recent value.
+
+        This method updates the binary sensor's state and triggers Home Assistant
+        to reflect the change. If the new value is the same as the current state,
+        no action is taken to avoid unnecessary updates.
+
+        Args:
+        ----
+            value: The new boolean state to set for the binary sensor.
+
+        Raises:
+        ------
+            ValueError: If the value is not a boolean.
+
+        If the value is not a boolean, this method will raise a ValueError.
+        If the current state is already equal to the new value, no update is performed.
+
+        """
         if self._attr_is_on == value:
             return
         LOGGER.debug(
