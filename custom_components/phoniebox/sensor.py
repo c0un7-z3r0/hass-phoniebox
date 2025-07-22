@@ -11,7 +11,6 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import EntityCategory, UnitOfInformation, UnitOfTemperature
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
-from homeassistant.util import slugify
 
 from .const import (
     BOOLEAN_SENSORS,
@@ -31,6 +30,7 @@ from .const import (
 )
 from .data_coordinator import DataCoordinator
 from .entity import PhonieboxEntity
+from .utils import create_entity_slug, create_mqtt_context, handle_mqtt_entity_by_type
 
 
 @dataclass
@@ -45,7 +45,7 @@ class SensorData:
     extract_value: Callable[[Any], float | str] | None = None
 
 
-class GenericPhonieboxSensor(PhonieboxEntity, SensorEntity):
+class GenericPhonieboxSensor(PhonieboxEntity, SensorEntity):  # pylint: disable=too-many-instance-attributes
     """Generic blueprint for a phoniebox sensor."""
 
     _attr_should_poll = False
@@ -221,18 +221,21 @@ async def async_setup_entry(
             if not isinstance(sensor.name, str):
                 continue
 
-            if sensor.name not in store:
-                sensor.hass = hass
-                sensor.set_event(msg.payload)
-                store[sensor.name] = sensor
-                LOGGER.debug("Registering sensor %(name)s", {"name": sensor.name})
-                async_add_entities(new_entities=(sensor,), update_before_add=True)
-            else:
-                store[sensor.name].set_event(msg.payload)
-                store[sensor.name].async_schedule_update_ha_state()
+            context = create_mqtt_context(
+                entity=sensor,
+                store=store,
+                hass=hass,
+                msg_payload=msg.payload,
+                async_add_entities_callback=async_add_entities,
+            )
+            handle_mqtt_entity_by_type(
+                entity_type="sensor",
+                context=context,
+                debug_logger=LOGGER,
+            )
 
     await coordinator.mqtt_client.async_subscribe("#", received_msg)
 
 
 def _slug(name: str, phoniebox_name: str) -> str:
-    return f"sensor.phoniebox_{phoniebox_name}_{slugify(name)}"
+    return create_entity_slug("sensor", name, phoniebox_name)

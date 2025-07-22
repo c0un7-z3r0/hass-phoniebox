@@ -9,7 +9,6 @@ from typing import TYPE_CHECKING, Any
 from homeassistant.components.switch import SwitchEntity
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.entity import EntityCategory
-from homeassistant.util import slugify
 
 from .const import (
     BINARY_SWITCHES,
@@ -24,7 +23,7 @@ from .const import (
     TOPIC_LENGTH_PLAYER_STATE,
 )
 from .entity import PhonieboxEntity
-from .utils import string_to_bool
+from .utils import create_entity_slug, create_mqtt_context, handle_mqtt_entity_by_type
 
 if TYPE_CHECKING:
     from homeassistant.components.mqtt.models import ReceiveMessage
@@ -90,20 +89,23 @@ async def async_setup_entry(
         )
 
         for sensor in sensors_tuple:
-            if sensor.name not in store:
-                sensor.hass = hass
-                sensor.set_state(value=string_to_bool(str(msg.payload)))
-                store[sensor.name] = sensor
-                async_add_devices(new_entities=(sensor,), update_before_add=True)
-            else:
-                store[sensor.name].set_state(value=string_to_bool(str(msg.payload)))
-                store[sensor.name].async_schedule_update_ha_state()
+            context = create_mqtt_context(
+                entity=sensor,
+                store=store,
+                hass=hass,
+                msg_payload=msg.payload,
+                async_add_entities_callback=async_add_devices,
+            )
+            handle_mqtt_entity_by_type(
+                entity_type="switch",
+                context=context,
+            )
 
     await coordinator.mqtt_client.async_subscribe("#", received_msg)
 
 
 def _slug(name: str, phoniebox_name: str) -> str:
-    return f"switch.phoniebox_{phoniebox_name}_{slugify(name)}"
+    return create_entity_slug("switch", name, phoniebox_name)
 
 
 @dataclass

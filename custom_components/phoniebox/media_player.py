@@ -3,15 +3,12 @@
 from abc import ABC
 from typing import override
 
-from homeassistant.components.media_player import (
-    MediaPlayerEntity,
+from homeassistant.components.media_player import MediaPlayerEntity
+from homeassistant.components.media_player.const import (
     MediaPlayerEntityFeature,
     MediaPlayerState,
-)
-from homeassistant.components.media_player.const import (
-    MEDIA_TYPE_MUSIC,
-    REPEAT_MODE_OFF,
-    REPEAT_MODE_ONE,
+    MediaType,
+    RepeatMode,
 )
 from homeassistant.components.mqtt.models import ReceiveMessage
 from homeassistant.config_entries import ConfigEntry
@@ -99,7 +96,7 @@ class PhonieboxMediaPlayer(PhonieboxEntity, MediaPlayerEntity, ABC):
 
     # pylint: disable=too-many-instance-attributes,too-many-public-methods,too-many-branches
     _attr_should_poll = False
-    _attr_media_content_type = MEDIA_TYPE_MUSIC
+    _attr_media_content_type = MediaType.MUSIC
     _attr_supported_features = MediaPlayerEntityFeature(SUPPORT_MQTTMEDIAPLAYER)
 
     def __init__(self, coordinator: DataCoordinator, config_entry: ConfigEntry) -> None:
@@ -114,7 +111,7 @@ class PhonieboxMediaPlayer(PhonieboxEntity, MediaPlayerEntity, ABC):
         self._attr_media_position = 0
         self._attr_is_volume_muted = False
         self._attr_shuffle = False
-        self._attr_repeat = REPEAT_MODE_OFF
+        self._attr_repeat = RepeatMode.OFF
         self._max_volume = 100
         self._attr_media_artist = None
         self._attr_media_album_artist = None
@@ -164,7 +161,7 @@ class PhonieboxMediaPlayer(PhonieboxEntity, MediaPlayerEntity, ABC):
         elif changed_attribute_name == PHONIEBOX_ATTR_REPEAT:
             # is bad but phoniebox will only say if repeat is on or off
             self._attr_repeat = (
-                REPEAT_MODE_ONE if new_value == "true" else REPEAT_MODE_OFF
+                RepeatMode.ONE if new_value == "true" else RepeatMode.OFF
             )
         self.schedule_update_ha_state(force_refresh=True)
 
@@ -246,7 +243,7 @@ class PhonieboxMediaPlayer(PhonieboxEntity, MediaPlayerEntity, ABC):
         )
 
     @override
-    async def async_set_repeat(self, repeat: str) -> None:
+    async def async_set_repeat(self, repeat: RepeatMode) -> None:
         """Set repeat mode."""
         await self.mqtt_client.async_publish_cmd(
             PHONIEBOX_CMD_PLAYER_REPEAT, HA_REPEAT_TO_PHONIEBOX[repeat]
