@@ -137,7 +137,7 @@ PHONIEBOX_STATE_TO_HA: Final[dict[str, MediaPlayerState]] = {
 # Configuration and options
 CONF_ENABLED: Final[str] = "enabled"
 CONF_USERNAME: Final[str] = "username"
-CONF_PASSWORD: Final[str] = "password"
+CONF_PASSWORD: Final[str] = "password"  # this is not a secret, just a config key
 
 CONF_PHONIEBOX_NAME: Final[str] = "phoniebox_name"
 CONF_MQTT_BASE_TOPIC: Final[str] = "mqtt_base_topic"

@@ -4,8 +4,9 @@ from collections.abc import Generator
 from unittest.mock import patch
 
 import pytest
-from homeassistant import config_entries, data_entry_flow
+from homeassistant import config_entries
 from homeassistant.core import HomeAssistant
+from homeassistant.data_entry_flow import FlowResultType
 
 from custom_components.phoniebox.const import DOMAIN
 
@@ -35,7 +36,7 @@ async def test_successful_config_flow(hass: HomeAssistant, config: dict) -> None
     )
 
     # Check that the config flow shows the user form as the first step
-    assert result["type"] == data_entry_flow.RESULT_TYPE_FORM
+    assert result["type"] == FlowResultType.FORM
     assert result["step_id"] == "user"
 
     # If a user were to enter `test_box` for name of the box and `test_phoniebox`
@@ -46,7 +47,7 @@ async def test_successful_config_flow(hass: HomeAssistant, config: dict) -> None
 
     # Check that the config flow is complete and a new entry is created with
     # the input data
-    assert result["type"] == data_entry_flow.RESULT_TYPE_CREATE_ENTRY
+    assert result["type"] == FlowResultType.CREATE_ENTRY
     assert result["title"] == "test_box"
     assert result["data"] == config
     assert result["result"]
