@@ -23,7 +23,7 @@ LOGGER: Logger = getLogger(__package__)
 NAME: Final[str] = "Phoniebox"
 DOMAIN: Final[str] = "phoniebox"
 DOMAIN_DATA: Final[str] = f"{DOMAIN}_data"
-VERSION: Final[str] = "0.8.0"  # Should match manifest.json
+VERSION: Final[str] = "0.9.1"  # Should match manifest.json
 ATTRIBUTION: Final[str] = ""
 ISSUE_URL: Final[str] = "https://github.com/c0un7-z3r0/hass-phoniebox/issues"
 
