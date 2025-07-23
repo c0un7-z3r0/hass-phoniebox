@@ -38,9 +38,6 @@ _Component to integrate your [phoniebox][phoniebox-repo] with [Home Assistant][h
 - **Audio Control**: Switch entities to toggle mute or random playback modes
 - **Real-time Updates**: All state changes are pushed via MQTT for instant updates
 
-Overview of what Features of Phoniebox have been implemented can be found in
-the [issues](https://github.com/c0un7-z3r0/hass-phoniebox/issues?q=is%3Aissue+is%3Aopen+label%3Aenhancement).
-
 ## How does it work
 
 Once the custom component is installed you can add your phoniebox as device in home assistant.
