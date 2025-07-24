@@ -9,7 +9,7 @@ updates:
     allow:
       - dependency-type: "all"
     commit-message:
-      prefix: "deps(pip)"
+      prefix: "build(pip)"
     labels:
       - "dependencies"
       - "python"
@@ -20,7 +20,7 @@ updates:
       interval: "weekly"
     open-pull-requests-limit: 5
     commit-message:
-      prefix: "deps(actions)"
+      prefix: "ci(actions)"
     labels:
       - "dependencies"
       - "github-actions"
