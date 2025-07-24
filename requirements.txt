@@ -11,4 +11,4 @@ mypy==1.17.0
 pylint==3.3.7
 pytest>=8.4
 voluptuous==0.15.2
-pytest-cov==6.1.1
+pytest-cov==6.2.1
