@@ -7,7 +7,7 @@ pytest-homeassistant-custom-component==0.13.262
 paho-mqtt==2.1.0
 aiohttp_cors==0.8.1
 pre-commit==4.3.0
-mypy==1.17.0
+mypy==1.17.1
 pylint==3.3.8
 pytest>=8.4
 voluptuous==0.15.2
