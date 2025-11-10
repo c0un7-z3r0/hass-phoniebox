@@ -6,7 +6,7 @@ ruff==0.12.4
 pytest-homeassistant-custom-component==0.13.262
 paho-mqtt==2.1.0
 aiohttp_cors==0.8.1
-pre-commit==4.3.0
+pre-commit==4.4.0
 mypy==1.18.2
 pylint==4.0.2
 pytest>=8.4
