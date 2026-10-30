@@ -30,7 +30,12 @@ from .const import (
 )
 from .data_coordinator import DataCoordinator
 from .entity import PhonieboxEntity
-from .utils import create_entity_slug, create_mqtt_context, handle_mqtt_entity_by_type
+from .utils import (
+    create_entity_slug,
+    create_mqtt_context,
+    create_unique_id_suffix,
+    handle_mqtt_entity_by_type,
+)
 
 
 @dataclass
@@ -58,6 +63,9 @@ class GenericPhonieboxSensor(PhonieboxEntity, SensorEntity):  # pylint: disable=
     ) -> None:
         """Initialize the sensor."""
         super().__init__(config_entry, coordinator)
+        self._unique_id_suffix = _unique_id_suffix(
+            data.name, config_entry.data[CONF_PHONIEBOX_NAME]
+        )
         self.entity_id = _slug(data.name, config_entry.data[CONF_PHONIEBOX_NAME])
         self._attr_name = data.name
         # This mqtt topic for the sensor which is its uid
@@ -239,3 +247,7 @@ async def async_setup_entry(
 
 def _slug(name: str, phoniebox_name: str) -> str:
     return create_entity_slug("sensor", name, phoniebox_name)
+
+
+def _unique_id_suffix(name: str, phoniebox_name: str) -> str:
+    return create_unique_id_suffix("sensor", name, phoniebox_name)

@@ -90,6 +90,16 @@ def ensure_entity_hass_and_update_state(
 
 def create_entity_slug(entity_type: str, name: str, phoniebox_name: str) -> str:
     """Create a standardized entity slug for phoniebox entities."""
+    return f"{entity_type}.phoniebox_{slugify(phoniebox_name)}_{slugify(name)}"
+
+
+def create_unique_id_suffix(entity_type: str, name: str, phoniebox_name: str) -> str:
+    """
+    Create the unique id suffix in the format of earlier versions.
+
+    Earlier versions derived the unique id from an unslugified entity id. It is
+    kept unchanged so existing entity registry entries stay attached.
+    """
     return f"{entity_type}.phoniebox_{phoniebox_name}_{slugify(name)}"
 
 
