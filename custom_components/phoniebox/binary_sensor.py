@@ -18,7 +18,12 @@ from .const import (
     TOPIC_LENGTH_PLAYER_STATE,
 )
 from .entity import PhonieboxEntity
-from .utils import create_entity_slug, create_mqtt_context, handle_mqtt_entity_by_type
+from .utils import (
+    create_entity_slug,
+    create_mqtt_context,
+    create_unique_id_suffix,
+    handle_mqtt_entity_by_type,
+)
 
 if TYPE_CHECKING:
     from homeassistant.components.mqtt.models import ReceiveMessage
@@ -100,6 +105,10 @@ def _slug(name: str, phoniebox_name: str) -> str:
     return create_entity_slug("binary_sensor", name, phoniebox_name)
 
 
+def _unique_id_suffix(name: str, phoniebox_name: str) -> str:
+    return create_unique_id_suffix("binary_sensor", name, phoniebox_name)
+
+
 class BinaryPhonieboxSensor(PhonieboxEntity, BinarySensorEntity):
     """
     Binary sensor entity for Phoniebox integration.
@@ -147,6 +156,9 @@ class BinaryPhonieboxSensor(PhonieboxEntity, BinarySensorEntity):
 
         """
         super().__init__(config_entry, coordinator)
+        self._unique_id_suffix = _unique_id_suffix(
+            name, config_entry.data[CONF_PHONIEBOX_NAME]
+        )
         self.entity_id = _slug(name, config_entry.data[CONF_PHONIEBOX_NAME])
         self._attr_name = name
         self._attr_device_class = device_class

@@ -105,6 +105,7 @@ class PhonieboxMediaPlayer(PhonieboxEntity, MediaPlayerEntity, ABC):
 
         self._attr_name = "Phoniebox" + " " + config_entry.data[CONF_PHONIEBOX_NAME]
         self.entity_id = _slug(config_entry.data[CONF_PHONIEBOX_NAME])
+        self._unique_id_suffix = self.entity_id
         self._attr_state = None  # initially None to allow all attr to be initialised
         self._attr_volume_level = 0.0
         self._attr_media_duration = 0

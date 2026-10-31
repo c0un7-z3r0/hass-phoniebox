@@ -17,7 +17,7 @@ from .const import (
     NAME_TO_MQTT_COMMAND,
 )
 from .entity import PhonieboxEntity
-from .sensor import _slug
+from .utils import create_entity_slug, create_unique_id_suffix
 
 if TYPE_CHECKING:
     from homeassistant.config_entries import ConfigEntry
@@ -96,7 +96,12 @@ class PhonieboxButton(PhonieboxEntity, ButtonEntity, ABC):
     ) -> None:
         """Init the button."""
         super().__init__(config_entry, coordinator)
-        self.entity_id = _slug(data.name, config_entry.data[CONF_PHONIEBOX_NAME])
+        phoniebox_name = config_entry.data[CONF_PHONIEBOX_NAME]
+        # Earlier versions used the sensor domain here, kept for the unique id.
+        self._unique_id_suffix = create_unique_id_suffix(
+            "sensor", data.name, phoniebox_name
+        )
+        self.entity_id = create_entity_slug("button", data.name, phoniebox_name)
         self._attr_name = data.name
         self._attr_device_class = data.device_class
         self._on_press_mqtt_topic = data.on_press_mqtt_topic

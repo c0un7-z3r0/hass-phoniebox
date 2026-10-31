@@ -38,6 +38,9 @@ async def test_successful_config_flow(hass: HomeAssistant, config: dict) -> None
     # Check that the config flow shows the user form as the first step
     assert result["type"] == FlowResultType.FORM
     assert result["step_id"] == "user"
+    assert result["description_placeholders"] == {
+        "docs_url": "https://github.com/c0un7-z3r0/hass-phoniebox"
+    }
 
     # If a user were to enter `test_box` for name of the box and `test_phoniebox`
     # for the base mqtt topic, it would result in this function call
