@@ -8,6 +8,8 @@ from homeassistant import config_entries
 
 from .const import CONF_MQTT_BASE_TOPIC, CONF_PHONIEBOX_NAME, DOMAIN
 
+DOCS_URL = "https://github.com/c0un7-z3r0/hass-phoniebox"
+
 
 class BlueprintFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
     """Config flow for Blueprint."""
@@ -58,4 +60,5 @@ class BlueprintFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                 }
             ),
             errors=self._errors,
+            description_placeholders={"docs_url": DOCS_URL},
         )

@@ -2,7 +2,7 @@
   "config": {
     "step": {
       "user": {
-        "description": "If you need help with the configuration have a look here: https://github.com/c0un7-z3r0/hass-phoniebox",
+        "description": "If you need help with the configuration have a look here: {docs_url}",
         "data": {
           "phoniebox_name": "Phoniebox Device Name",
           "mqtt_base_topic": "Base MQTT Topic (configured in Phoniebox Config)"
